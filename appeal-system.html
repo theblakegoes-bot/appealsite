@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Appeal System</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  :root {
+    --red: #e8222a;
+    --dark-red: #b01a20;
+    --bg: #111318;
+    --panel: #1c1f28;
+    --card: #242836;
+    --border: #2e3347;
+    --text: #eef0f8;
+    --muted: #7a7f99;
+    --green: #2ecc71;
+    --yellow: #f1c40f;
+    --blue: #3498db;
+    --purple: #9b59b6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); min-height: 100vh; }
+
+  .admin-banner {
+    display: none;
+    background: rgba(155,89,182,0.15);
+    border-bottom: 1px solid var(--purple);
+    text-align: center;
+    padding: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--purple);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .admin-banner.show { display: block; }
+
+  nav {
+    background: var(--panel);
+    border-bottom: 3px solid var(--red);
+    padding: 14px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--red); letter-spacing: 1px; }
+  .logo span { color: var(--text); }
+  .nav-tabs { display: flex; gap: 8px; }
+  .tab-btn {
+    background: none; border: 2px solid var(--border); color: var(--muted);
+    padding: 7px 20px; border-radius: 8px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active, .tab-btn:hover { border-color: var(--red); color: var(--text); background: rgba(232,34,42,0.12); }
+
+  .page { display: none; max-width: 720px; margin: 40px auto; padding: 0 20px; }
+  .page.active { display: block; }
+
+  .hero { text-align: center; margin-bottom: 36px; }
+  .hero-icon { font-size: 3rem; margin-bottom: 12px; }
+  .hero h1 { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: var(--text); }
+  .hero p { color: var(--muted); margin-top: 8px; font-size: 0.95rem; }
+
+  .form-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+  .form-group { margin-bottom: 20px; }
+  label { display: block; font-weight: 700; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  input, textarea, select {
+    width: 100%; background: var(--panel); border: 2px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.95rem; transition: border-color 0.2s; outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--red); }
+  textarea { min-height: 120px; resize: vertical; }
+  select option { background: var(--panel); }
+
+  .submit-btn {
+    width: 100%; background: var(--red); color: #fff; border: none; border-radius: 10px;
+    padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
+    cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 4px;
+  }
+  .submit-btn:hover { background: var(--dark-red); transform: translateY(-1px); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { background: #555; cursor: not-allowed; transform: none; }
+
+  .success-box {
+    background: rgba(46,204,113,0.1); border: 2px solid var(--green); border-radius: 12px;
+    padding: 20px; text-align: center; display: none; margin-top: 20px;
+  }
+  .success-box.show { display: block; }
+  .success-box h3 { color: var(--green); font-family: 'Fredoka One', cursive; font-size: 1.3rem; }
+  .success-box p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
+
+  .login-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; margin: 0 auto; }
+  .login-card h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; margin-bottom: 6px; text-align: center; }
+  .login-subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; }
+  .login-error { color: var(--red); font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; }
+
+  .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .admin-header h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; }
+  .badge { background: var(--red); color: #fff; border-radius: 20px; padding: 3px 12px; font-size: 0.8rem; font-weight: 700; }
+  .logout-btn {
+    background: none; border: 2px solid var(--border); color: var(--muted);
+    padding: 6px 14px; border-radius: 8px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .whitelist-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+  .whitelist-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.1rem; margin-bottom: 14px; color: var(--purple); }
+  .whitelist-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .whitelist-row input { margin-bottom: 0; }
+  .add-btn {
+    background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 0 18px;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
+  }
+  .add-btn:hover { opacity: 0.85; }
+  .whitelist-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .whitelist-tag {
+    background: rgba(155,89,182,0.15); border: 1px solid var(--purple); border-radius: 20px;
+    padding: 4px 12px; font-size: 0.8rem; color: #c39bd3; display: flex; align-items: center; gap: 6px;
+  }
+  .remove-tag { cursor: pointer; color: var(--muted); font-size: 1rem; line-height: 1; }
+  .remove-tag:hover { color: var(--red); }
+  .owner-tag { background: rgba(232,34,42,0.12); border-color: var(--red); color: #f0a0a3; }
+
+  .template-notice {
+    background: rgba(241,196,15,0.08); border: 1px solid var(--yellow); border-radius: 10px;
+    padding: 12px 16px; font-size: 0.82rem; color: #d4b800; margin-bottom: 20px;
+  }
+
+  .appeals-list { display: flex; flex-direction: column; gap: 14px; }
+  .appeal-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
+  .appeal-item:hover { border-color: var(--red); }
+  .appeal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .player-name { font-weight: 800; font-size: 1.05rem; }
+  .appeal-email { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .status-pill { padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+  .status-pending  { background: rgba(241,196,15,0.15);  color: var(--yellow); border: 1px solid var(--yellow); }
+  .status-accepted { background: rgba(46,204,113,0.15);  color: var(--green);  border: 1px solid var(--green); }
+  .status-declined { background: rgba(232,34,42,0.15);   color: var(--red);    border: 1px solid var(--red); }
+  .appeal-reason { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; line-height: 1.5; border-left: 3px solid var(--border); padding-left: 12px; }
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .action-btn { padding: 7px 16px; border-radius: 8px; border: 2px solid; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+  .btn-accept  { border-color: var(--green);  color: var(--green);  background: none; }
+  .btn-accept:hover  { background: rgba(46,204,113,0.15); }
+  .btn-decline { border-color: var(--red);    color: var(--red);    background: none; }
+  .btn-decline:hover { background: rgba(232,34,42,0.15); }
+  .btn-pending { border-color: var(--yellow); color: var(--yellow); background: none; }
+  .btn-pending:hover { background: rgba(241,196,15,0.15); }
+  .btn-delete  { border-color: var(--border); color: var(--muted);  background: none; margin-left: auto; }
+  .btn-delete:hover  { border-color: #555; color: var(--text); }
+  .no-appeals { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .no-appeals .icon { font-size: 3rem; margin-bottom: 12px; }
+
+  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; font-size: 0.9rem; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 999; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.toast-ok  { border-color: var(--green); color: var(--green); }
+  .toast.toast-err { border-color: var(--red);   color: var(--red); }
+
+  @media(max-width:520px){
+    .form-card, .login-card { padding: 20px; }
+    .action-row { flex-direction: column; }
+    .btn-delete { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="admin-banner" id="admin-banner">🔐 &nbsp; Admin Panel</div>
+
+<nav>
+  <div class="logo">⚔️ <span>Roblox</span>Appeals</div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" id="tab-appeal" onclick="showPage('appeal')">Submit Appeal</button>
+    <button class="tab-btn"        id="tab-admin"  onclick="showPage('admin')">Admin Panel</button>
+  </div>
+</nav>
+
+<!-- ════════ APPEAL PAGE ════════ -->
+<div class="page active" id="page-appeal">
+  <div class="hero">
+    <div class="hero-icon">📋</div>
+    <h1>Submit an Appeal</h1>
+    <p>Were you banned unfairly? Fill out the form below and we'll review your case.</p>
+  </div>
+  <div class="form-card">
+    <div class="form-group">
+      <label>Roblox Username</label>
+      <input type="text" id="username" placeholder="YourUsername123" />
+    </div>
+    <div class="form-group">
+      <label>Your Email Address</label>
+      <input type="email" id="player-email" placeholder="you@example.com" />
+    </div>
+    <div class="form-group">
+      <label>Ban Reason (if known)</label>
+      <input type="text" id="ban-reason" placeholder="e.g. Exploiting, Chat violation..." />
+    </div>
+    <div class="form-group">
+      <label>Your Appeal</label>
+      <textarea id="appeal-text" placeholder="Explain why you think your ban should be lifted. Be honest and detailed."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Punishment Type</label>
+      <select id="punishment-type">
+        <option value="">Select type...</option>
+        <option value="Game Ban">Game Ban</option>
+        <option value="Server Ban">Server Ban</option>
+        <option value="Mute">Mute</option>
+        <option value="Kick">Kick</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <button class="submit-btn" id="appeal-submit-btn" onclick="submitAppeal()">🚀 SUBMIT APPEAL</button>
+    <div class="success-box" id="success-box">
+      <h3>✅ Appeal Submitted!</h3>
+      <p>We've received your appeal. You'll get an email update when a decision is made.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ ADMIN PAGE ════════ -->
+<div class="page" id="page-admin">
+
+  <div id="admin-login">
+    <div class="login-card">
+      <h2>🔐 Admin Login</h2>
+      <p class="login-subtitle">Authorised staff only.</p>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="admin-email" placeholder="yourname@gmail.com" onkeydown="if(event.key==='Enter')adminLogin()" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="admin-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()" />
+      </div>
+      <button class="submit-btn" onclick="adminLogin()">ACCESS PANEL</button>
+      <div class="login-error" id="login-error">🚫 Access denied. Wrong email or password.</div>
+    </div>
+  </div>
+
+  <div id="admin-panel" style="display:none">
+    <div class="admin-header">
+      <h2>📬 Appeals</h2>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="badge" id="appeal-count">0</span>
+        <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <div class="template-notice" id="template-notice">
+      ⚠️ <strong>One step left!</strong> Send me your EmailJS <strong>Template ID</strong> and <strong>Public Key</strong> and I'll add them in — then emails will fully work!
+    </div>
+
+    <div class="whitelist-card">
+      <h3>🛡️ Whitelisted Admins</h3>
+      <div class="whitelist-row">
+        <input type="email" id="whitelist-input" placeholder="Add an email to whitelist..." />
+        <button class="add-btn" onclick="addWhitelist()">+ Add</button>
+      </div>
+      <div class="whitelist-list" id="whitelist-list"></div>
+    </div>
+
+    <div class="appeals-list" id="appeals-list">
+      <div class="no-appeals"><div class="icon">📭</div><p>No appeals yet. Check back later!</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── EmailJS config ──
+  const EMAILJS_SERVICE_ID  = 'service_gmt5cvx';
+  const EMAILJS_TEMPLATE_ID = 'template_kreqxod';
+  const EMAILJS_PUBLIC_KEY  = 'us7G33aq7_9z5zwcv';
+
+  const ADMIN_PASSWORD = 'Noah1116';
+
+  // ── Owner (always whitelisted, cannot be removed) ──
+  const OWNER_EMAIL = 'noahhemingway1116@gmail.com';
+
+  // ── State ──
+  let appeals   = JSON.parse(localStorage.getItem('roblox_appeals')   || '[]');
+  let whitelist = JSON.parse(localStorage.getItem('roblox_whitelist') || '[]');
+
+  // Always keep owner in list
+  if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL)) {
+    whitelist.unshift(OWNER_EMAIL);
+    saveWhitelist();
+  }
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
+  // ── Navigation ──
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('tab-' + page).classList.add('active');
+    document.getElementById('admin-banner').classList.toggle('show', page === 'admin');
+  }
+
+  // ── Submit Appeal ──
+  function submitAppeal() {
+    const username  = document.getElementById('username').value.trim();
+    const email     = document.getElementById('player-email').value.trim();
+    const banReason = document.getElementById('ban-reason').value.trim();
+    const text      = document.getElementById('appeal-text').value.trim();
+    const type      = document.getElementById('punishment-type').value;
+
+    if (!username || !email || !text || !type) { showToast('Please fill in all fields!', 'err'); return; }
+    if (!email.includes('@')) { showToast('Please enter a valid email.', 'err'); return; }
+
+    const appeal = { id: Date.now(), username, email, banReason, text, type, status: 'Pending', date: new Date().toLocaleDateString() };
+    appeals.unshift(appeal);
+    saveAppeals();
+
+    document.getElementById('success-box').classList.add('show');
+    document.getElementById('appeal-submit-btn').disabled = true;
+    setTimeout(() => {
+      document.getElementById('success-box').classList.remove('show');
+      document.getElementById('appeal-submit-btn').disabled = false;
+      ['username','player-email','ban-reason','appeal-text'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('punishment-type').value = '';
+    }, 4000);
+  }
+
+  // ── Admin Login ──
+  function adminLogin() {
+    const entered = document.getElementById('admin-email').value.trim().toLowerCase();
+    const pass    = document.getElementById('admin-pass').value;
+    const allowed = whitelist.map(e => e.toLowerCase());
+    if (allowed.includes(entered) && pass === ADMIN_PASSWORD) {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      if (EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID') document.getElementById('template-notice').style.display = 'none';
+      renderWhitelist();
+      renderAppeals();
+    } else {
+      const err = document.getElementById('login-error');
+      err.style.display = 'block';
+      document.getElementById('admin-pass').value = '';
+      setTimeout(() => { err.style.display = 'none'; }, 3500);
+    }
+  }
+
+  function adminLogout() {
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('admin-login').style.display = 'block';
+    document.getElementById('admin-email').value = '';
+  }
+
+  // ── Whitelist ──
+  function addWhitelist() {
+    const val = document.getElementById('whitelist-input').value.trim().toLowerCase();
+    if (!val || !val.includes('@')) { showToast('Enter a valid email.', 'err'); return; }
+    if (whitelist.map(e=>e.toLowerCase()).includes(val)) { showToast('Already whitelisted!', 'err'); return; }
+    whitelist.push(val);
+    saveWhitelist();
+    renderWhitelist();
+    document.getElementById('whitelist-input').value = '';
+    showToast('✅ ' + val + ' added!', 'ok');
+  }
+
+  function removeWhitelist(email) {
+    if (email.toLowerCase() === OWNER_EMAIL) { showToast('Cannot remove the owner!', 'err'); return; }
+    whitelist = whitelist.filter(e => e.toLowerCase() !== email.toLowerCase());
+    saveWhitelist();
+    renderWhitelist();
+  }
+
+  function renderWhitelist() {
+    document.getElementById('whitelist-list').innerHTML = whitelist.map(e => `
+      <div class="whitelist-tag ${e.toLowerCase()===OWNER_EMAIL?'owner-tag':''}">
+        ${esc(e)}
+        ${e.toLowerCase()===OWNER_EMAIL
+          ? '<span title="Owner">👑</span>'
+          : `<span class="remove-tag" onclick="removeWhitelist('${esc(e)}')" title="Remove">✕</span>`}
+      </div>
+    `).join('');
+  }
+
+  // ── Render Appeals ──
+  function renderAppeals() {
+    const list = document.getElementById('appeals-list');
+    document.getElementById('appeal-count').textContent = appeals.length;
+    if (appeals.length === 0) {
+      list.innerHTML = '<div class="no-appeals"><div class="icon">📭</div><p>No appeals yet!</p></div>';
+      return;
+    }
+    list.innerHTML = appeals.map(a => `
+      <div class="appeal-item" id="appeal-${a.id}">
+        <div class="appeal-top">
+          <div>
+            <div class="player-name">🎮 ${esc(a.username)}</div>
+            <div class="appeal-email">${esc(a.email)} · ${a.date} · ${esc(a.type)}</div>
+          </div>
+          <span class="status-pill status-${a.status.toLowerCase()}">${a.status}</span>
+        </div>
+        ${a.banReason ? `<div class="appeal-email" style="margin-bottom:8px">Ban reason: ${esc(a.banReason)}</div>` : ''}
+        <div class="appeal-reason">${esc(a.text)}</div>
+        <div class="action-row">
+          <button class="action-btn btn-accept"  onclick="setStatus(${a.id},'Accepted')">✅ Accept</button>
+          <button class="action-btn btn-decline" onclick="setStatus(${a.id},'Declined')">❌ Decline</button>
+          <button class="action-btn btn-pending" onclick="setStatus(${a.id},'Pending')">🕐 Pending</button>
+          <button class="action-btn btn-delete"  onclick="deleteAppeal(${a.id})">🗑 Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── Set Status + Email ──
+  function setStatus(id, status) {
+    const a = appeals.find(x => x.id === id);
+    if (!a) return;
+    a.status = status;
+    saveAppeals();
+    renderAppeals();
+
+    if (EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID' || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+      showToast('Status saved! (Add Template ID to send emails)', 'ok');
+      return;
+    }
+
+    const msgs = {
+      Accepted: `Hello ${a.username},\n\nGreat news! Your appeal has been ACCEPTED. You have been unbanned. Welcome back!\n\n- The Staff Team`,
+      Declined: `Hello ${a.username},\n\nAfter review, your appeal has been DECLINED. Our decision is final.\n\n- The Staff Team`,
+      Pending:  `Hello ${a.username},\n\nYour appeal is PENDING review. Our team is looking into your case. Please be patient.\n\n- The Staff Team`
+    };
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email:      a.email,
+      name:       a.username,
+      title:      'Appeal - ' + status.toUpperCase(),
+      status:     status.toUpperCase(),
+      message:    msgs[status],
+      punishment: a.type
+    }).then(() => {
+      showToast('📧 Email sent to ' + a.email + '!', 'ok');
+    }).catch(err => {
+      showToast('Email failed — check EmailJS config.', 'err');
+      console.error(err);
+    });
+  }
+
+  // ── Delete ──
+  function deleteAppeal(id) {
+    appeals = appeals.filter(a => a.id !== id);
+    saveAppeals();
+    renderAppeals();
+  }
+
+  // ── Helpers ──
+  function saveAppeals()   { localStorage.setItem('roblox_appeals',   JSON.stringify(appeals)); }
+  function saveWhitelist() { localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist)); }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function showToast(msg, type='ok') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast toast-' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+</script>
+</body>
+</html>
