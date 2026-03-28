@@ -20,6 +20,7 @@
     --yellow: #f1c40f;
     --blue: #3498db;
     --purple: #9b59b6;
+    --teal: #1abc9c;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); min-height: 100vh; }
@@ -84,6 +85,21 @@
   .submit-btn:active { transform: translateY(0); }
   .submit-btn:disabled { background: #555; cursor: not-allowed; transform: none; }
 
+  .send-code-btn {
+    width: 100%; background: var(--purple); color: #fff; border: none; border-radius: 10px;
+    padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 4px;
+  }
+  .send-code-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .send-code-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .verify-btn {
+    width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 10px;
+    padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 4px;
+  }
+  .verify-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
   .success-box {
     background: rgba(46,204,113,0.1); border: 2px solid var(--green); border-radius: 12px;
     padding: 20px; text-align: center; display: none; margin-top: 20px;
@@ -92,10 +108,24 @@
   .success-box h3 { color: var(--green); font-family: 'Fredoka One', cursive; font-size: 1.3rem; }
   .success-box p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
 
+  .cooldown-box {
+    background: rgba(232,34,42,0.08); border: 2px solid var(--red); border-radius: 12px;
+    padding: 20px; text-align: center; display: none; margin-top: 20px;
+  }
+  .cooldown-box.show { display: block; }
+  .cooldown-box h3 { color: var(--red); font-family: 'Fredoka One', cursive; font-size: 1.2rem; }
+  .cooldown-box p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
+
   .login-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; margin: 0 auto; }
   .login-card h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; margin-bottom: 6px; text-align: center; }
-  .login-subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; }
+  .login-subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; line-height: 1.5; }
   .login-error { color: var(--red); font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; }
+  .login-info {
+    color: var(--blue); font-size: 0.82rem; margin-top: 12px; text-align: center;
+    display: none; background: rgba(52,152,219,0.08); border: 1px solid var(--blue);
+    border-radius: 8px; padding: 10px 14px; line-height: 1.5;
+  }
+  #code-step { display: none; }
 
   .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
   .admin-header h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; }
@@ -140,16 +170,19 @@
   .status-pending  { background: rgba(241,196,15,0.15);  color: var(--yellow); border: 1px solid var(--yellow); }
   .status-accepted { background: rgba(46,204,113,0.15);  color: var(--green);  border: 1px solid var(--green); }
   .status-declined { background: rgba(232,34,42,0.15);   color: var(--red);    border: 1px solid var(--red); }
+  .status-unbanned { background: rgba(26,188,156,0.15);  color: var(--teal);   border: 1px solid var(--teal); }
   .appeal-reason { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; line-height: 1.5; border-left: 3px solid var(--border); padding-left: 12px; }
   .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .action-btn { padding: 7px 16px; border-radius: 8px; border: 2px solid; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-  .btn-accept  { border-color: var(--green);  color: var(--green);  background: none; }
+  .action-btn { padding: 7px 16px; border-radius: 8px; border: 2px solid; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; background: none; }
+  .btn-accept  { border-color: var(--green);  color: var(--green); }
   .btn-accept:hover  { background: rgba(46,204,113,0.15); }
-  .btn-decline { border-color: var(--red);    color: var(--red);    background: none; }
+  .btn-unban   { border-color: var(--teal);   color: var(--teal); }
+  .btn-unban:hover   { background: rgba(26,188,156,0.15); }
+  .btn-decline { border-color: var(--red);    color: var(--red); }
   .btn-decline:hover { background: rgba(232,34,42,0.15); }
-  .btn-pending { border-color: var(--yellow); color: var(--yellow); background: none; }
+  .btn-pending { border-color: var(--yellow); color: var(--yellow); }
   .btn-pending:hover { background: rgba(241,196,15,0.15); }
-  .btn-delete  { border-color: var(--border); color: var(--muted);  background: none; margin-left: auto; }
+  .btn-delete  { border-color: var(--border); color: var(--muted); margin-left: auto; }
   .btn-delete:hover  { border-color: #555; color: var(--text); }
   .no-appeals { text-align: center; padding: 60px 20px; color: var(--muted); }
   .no-appeals .icon { font-size: 3rem; margin-bottom: 12px; }
@@ -216,7 +249,11 @@
     <button class="submit-btn" id="appeal-submit-btn" onclick="submitAppeal()">🚀 SUBMIT APPEAL</button>
     <div class="success-box" id="success-box">
       <h3>✅ Appeal Submitted!</h3>
-      <p>We've received your appeal. You'll get an email update when a decision is made.</p>
+      <p>We've received your appeal. You'll receive an email update once a decision has been made. Please be patient — our team reviews appeals within 3 business days.</p>
+    </div>
+    <div class="cooldown-box" id="cooldown-box">
+      <h3>⏳ Cooldown Active</h3>
+      <p id="cooldown-msg">You have already submitted an appeal recently. Please wait before submitting another one.</p>
     </div>
   </div>
 </div>
@@ -227,17 +264,31 @@
   <div id="admin-login">
     <div class="login-card">
       <h2>🔐 Admin Login</h2>
-      <p class="login-subtitle">Authorised staff only.</p>
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="admin-email" placeholder="yourname@gmail.com" onkeydown="if(event.key==='Enter')adminLogin()" />
+      <p class="login-subtitle">Enter your whitelisted email. A verification code will be sent to the staff account — contact a staff member to receive it.</p>
+
+      <!-- Step 1: Email -->
+      <div id="email-step">
+        <div class="form-group">
+          <label>Your Whitelisted Email</label>
+          <input type="email" id="admin-email" placeholder="yourname@gmail.com" onkeydown="if(event.key==='Enter')sendCode()" />
+        </div>
+        <button class="send-code-btn" id="send-code-btn" onclick="sendCode()">📨 SEND VERIFICATION CODE</button>
+        <div class="login-error" id="login-error">🚫 Access denied. This email is not whitelisted.</div>
+        <div class="login-info" id="login-info">📧 A code has been sent to the staff account! Ask a staff member for the 6-digit code to continue.</div>
       </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="admin-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')adminLogin()" />
+
+      <!-- Step 2: Code input -->
+      <div id="code-step">
+        <div class="form-group" style="margin-top:4px">
+          <label>Verification Code</label>
+          <input type="text" id="admin-code" placeholder="000000" maxlength="6"
+            onkeydown="if(event.key==='Enter')verifyCode()"
+            style="letter-spacing:8px;font-size:1.4rem;text-align:center;font-family:'Fredoka One',cursive" />
+        </div>
+        <button class="verify-btn" onclick="verifyCode()">✅ VERIFY &amp; ACCESS PANEL</button>
+        <div class="login-error" id="code-error">🚫 Incorrect code. Please try again.</div>
+        <p onclick="resetLogin()" style="text-align:center;margin-top:14px;font-size:0.78rem;color:var(--muted);cursor:pointer;text-decoration:underline">← Use a different email</p>
       </div>
-      <button class="submit-btn" onclick="adminLogin()">ACCESS PANEL</button>
-      <div class="login-error" id="login-error">🚫 Access denied. Wrong email or password.</div>
     </div>
   </div>
 
@@ -251,7 +302,7 @@
     </div>
 
     <div class="template-notice" id="template-notice">
-      ⚠️ <strong>One step left!</strong> Send me your EmailJS <strong>Template ID</strong> and <strong>Public Key</strong> and I'll add them in — then emails will fully work!
+      ⚠️ <strong>EmailJS not configured.</strong> Status updates will save but emails won't send until credentials are set.
     </div>
 
     <div class="whitelist-card">
@@ -272,27 +323,76 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── EmailJS config ──
+  // ── Config ──
   const EMAILJS_SERVICE_ID  = 'service_gmt5cvx';
   const EMAILJS_TEMPLATE_ID = 'template_kreqxod';
   const EMAILJS_PUBLIC_KEY  = 'us7G33aq7_9z5zwcv';
-
-  const ADMIN_PASSWORD = 'Noah1116';
-
-  // ── Owner (always whitelisted, cannot be removed) ──
-  const OWNER_EMAIL = 'noahhemingway1116@gmail.com';
+  const STAFF_NOTIFY_EMAIL  = 'fakeaquatic@gmail.com';
+  const OWNER_EMAIL         = 'noahhemingway1116@gmail.com';
+  const COOLDOWN_MS         = 48 * 60 * 60 * 1000; // 48 hours in ms
 
   // ── State ──
   let appeals   = JSON.parse(localStorage.getItem('roblox_appeals')   || '[]');
   let whitelist = JSON.parse(localStorage.getItem('roblox_whitelist') || '[]');
+  let pendingCode       = null;
+  let pendingLoginEmail = null;
 
-  // Always keep owner in list
   if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL)) {
     whitelist.unshift(OWNER_EMAIL);
     saveWhitelist();
   }
 
-  emailjs.init(EMAILJS_PUBLIC_KEY);
+  // ── EmailJS Init ──
+  let emailjsReady = false;
+  window.addEventListener('load', () => {
+    try { emailjs.init(EMAILJS_PUBLIC_KEY); emailjsReady = true; }
+    catch(e) { console.error('EmailJS init failed:', e); }
+  });
+
+  // ══════════════════════════════════════════════
+  // HWID FINGERPRINT — browser device identifier
+  // ══════════════════════════════════════════════
+  function getFingerprint() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('rblx-appeal-fp', 2, 2);
+    const fp = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+      new Date().getTimezoneOffset(),
+      navigator.hardwareConcurrency || 0,
+      navigator.platform || '',
+      canvas.toDataURL().slice(-80)
+    ].join('|');
+    let h = 0;
+    for (let i = 0; i < fp.length; i++) { h = Math.imul(31, h) + fp.charCodeAt(i) | 0; }
+    return 'fp_' + Math.abs(h).toString(36);
+  }
+
+  function getCooldownRemaining() {
+    const fp = getFingerprint();
+    const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
+    if (!data[fp]) return 0;
+    const remaining = COOLDOWN_MS - (Date.now() - data[fp]);
+    return remaining > 0 ? remaining : 0;
+  }
+
+  function setCooldown() {
+    const fp = getFingerprint();
+    const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
+    data[fp] = Date.now();
+    localStorage.setItem('appeal_cooldowns', JSON.stringify(data));
+  }
+
+  function fmtTime(ms) {
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    if (h > 0) return h + ' hour' + (h !== 1 ? 's' : '') + (m > 0 ? ' and ' + m + ' minute' + (m !== 1 ? 's' : '') : '');
+    return m + ' minute' + (m !== 1 ? 's' : '');
+  }
 
   // ── Navigation ──
   function showPage(page) {
@@ -314,10 +414,21 @@
     if (!username || !email || !text || !type) { showToast('Please fill in all fields!', 'err'); return; }
     if (!email.includes('@')) { showToast('Please enter a valid email.', 'err'); return; }
 
+    const remaining = getCooldownRemaining();
+    if (remaining > 0) {
+      document.getElementById('cooldown-msg').textContent =
+        'You have already submitted an appeal recently. Please wait ' + fmtTime(remaining) + ' before submitting another one. This is tracked by your device ID (HWID) and cannot be bypassed.';
+      document.getElementById('cooldown-box').classList.add('show');
+      document.getElementById('success-box').classList.remove('show');
+      return;
+    }
+
     const appeal = { id: Date.now(), username, email, banReason, text, type, status: 'Pending', date: new Date().toLocaleDateString() };
     appeals.unshift(appeal);
     saveAppeals();
+    setCooldown();
 
+    document.getElementById('cooldown-box').classList.remove('show');
     document.getElementById('success-box').classList.add('show');
     document.getElementById('appeal-submit-btn').disabled = true;
     setTimeout(() => {
@@ -328,29 +439,96 @@
     }, 4000);
   }
 
-  // ── Admin Login ──
-  function adminLogin() {
+  // ══════════════════════════════════════════════
+  // ADMIN LOGIN — Email + verification code only
+  // ══════════════════════════════════════════════
+  function sendCode() {
     const entered = document.getElementById('admin-email').value.trim().toLowerCase();
-    const pass    = document.getElementById('admin-pass').value;
     const allowed = whitelist.map(e => e.toLowerCase());
-    if (allowed.includes(entered) && pass === ADMIN_PASSWORD) {
+    const errEl   = document.getElementById('login-error');
+    const infoEl  = document.getElementById('login-info');
+    const btn     = document.getElementById('send-code-btn');
+
+    errEl.style.display = infoEl.style.display = 'none';
+
+    if (!entered || !entered.includes('@')) { showToast('Enter a valid email.', 'err'); return; }
+
+    if (!allowed.includes(entered)) {
+      errEl.style.display = 'block';
+      setTimeout(() => { errEl.style.display = 'none'; }, 3500);
+      return;
+    }
+
+    pendingCode       = String(Math.floor(100000 + Math.random() * 900000));
+    pendingLoginEmail = entered;
+
+    btn.disabled    = true;
+    btn.textContent = '⏳ Sending...';
+
+    if (!emailjsReady) {
+      showToast('EmailJS not ready — check connection.', 'err');
+      btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
+      return;
+    }
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email:      STAFF_NOTIFY_EMAIL,
+      name:       'Staff Team',
+      title:      'Admin Login Verification Code',
+      status:     'LOGIN CODE',
+      message:    'Admin login requested by: ' + entered + '\n\nVerification Code: ' + pendingCode + '\n\nShare this code ONLY with the person trying to log in. This code expires in 10 minutes.',
+      punishment: 'N/A'
+    }).then(() => {
+      infoEl.style.display = 'block';
+      document.getElementById('email-step').style.display = 'none';
+      document.getElementById('code-step').style.display  = 'block';
+      btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
+      setTimeout(() => { pendingCode = null; }, 600000); // expire after 10 min
+    }).catch(err => {
+      showToast('Failed to send code. Check EmailJS config.', 'err');
+      console.error(err);
+      btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
+    });
+  }
+
+  function verifyCode() {
+    const entered = document.getElementById('admin-code').value.trim();
+    const errEl   = document.getElementById('code-error');
+    errEl.style.display = 'none';
+
+    if (!pendingCode) {
+      showToast('Code expired. Please request a new one.', 'err');
+      resetLogin(); return;
+    }
+
+    if (entered === pendingCode) {
+      pendingCode = null;
       document.getElementById('admin-login').style.display = 'none';
       document.getElementById('admin-panel').style.display = 'block';
       if (EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID') document.getElementById('template-notice').style.display = 'none';
       renderWhitelist();
       renderAppeals();
     } else {
-      const err = document.getElementById('login-error');
-      err.style.display = 'block';
-      document.getElementById('admin-pass').value = '';
-      setTimeout(() => { err.style.display = 'none'; }, 3500);
+      errEl.style.display = 'block';
+      document.getElementById('admin-code').value = '';
+      setTimeout(() => { errEl.style.display = 'none'; }, 3500);
     }
+  }
+
+  function resetLogin() {
+    pendingCode = null; pendingLoginEmail = null;
+    document.getElementById('email-step').style.display = 'block';
+    document.getElementById('code-step').style.display  = 'none';
+    document.getElementById('admin-email').value = '';
+    document.getElementById('admin-code').value  = '';
+    document.getElementById('login-info').style.display  = 'none';
+    document.getElementById('login-error').style.display = 'none';
   }
 
   function adminLogout() {
     document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('admin-login').style.display = 'block';
-    document.getElementById('admin-email').value = '';
+    resetLogin();
   }
 
   // ── Whitelist ──
@@ -359,8 +537,7 @@
     if (!val || !val.includes('@')) { showToast('Enter a valid email.', 'err'); return; }
     if (whitelist.map(e=>e.toLowerCase()).includes(val)) { showToast('Already whitelisted!', 'err'); return; }
     whitelist.push(val);
-    saveWhitelist();
-    renderWhitelist();
+    saveWhitelist(); renderWhitelist();
     document.getElementById('whitelist-input').value = '';
     showToast('✅ ' + val + ' added!', 'ok');
   }
@@ -368,8 +545,7 @@
   function removeWhitelist(email) {
     if (email.toLowerCase() === OWNER_EMAIL) { showToast('Cannot remove the owner!', 'err'); return; }
     whitelist = whitelist.filter(e => e.toLowerCase() !== email.toLowerCase());
-    saveWhitelist();
-    renderWhitelist();
+    saveWhitelist(); renderWhitelist();
   }
 
   function renderWhitelist() {
@@ -379,8 +555,7 @@
         ${e.toLowerCase()===OWNER_EMAIL
           ? '<span title="Owner">👑</span>'
           : `<span class="remove-tag" onclick="removeWhitelist('${esc(e)}')" title="Remove">✕</span>`}
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
   // ── Render Appeals ──
@@ -404,53 +579,64 @@
         <div class="appeal-reason">${esc(a.text)}</div>
         <div class="action-row">
           <button class="action-btn btn-accept"  onclick="setStatus(${a.id},'Accepted')">✅ Accept</button>
+          <button class="action-btn btn-unban"   onclick="setStatus(${a.id},'Unbanned')">🔓 Unbanned</button>
           <button class="action-btn btn-decline" onclick="setStatus(${a.id},'Declined')">❌ Decline</button>
           <button class="action-btn btn-pending" onclick="setStatus(${a.id},'Pending')">🕐 Pending</button>
           <button class="action-btn btn-delete"  onclick="deleteAppeal(${a.id})">🗑 Delete</button>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  // ── Set Status + Email ──
+  // ── Set Status + Send Email ──
   function setStatus(id, status) {
     const a = appeals.find(x => x.id === id);
     if (!a) return;
     a.status = status;
-    saveAppeals();
-    renderAppeals();
+    saveAppeals(); renderAppeals();
 
     if (EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID' || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-      showToast('Status saved! (Add Template ID to send emails)', 'ok');
-      return;
+      showToast('Status saved! (Configure EmailJS to enable emails)', 'ok'); return;
     }
 
-    const msgs = {
-      Accepted: `Hello ${a.username},\n\nGreat news! Your appeal has been ACCEPTED. You have been unbanned. Welcome back!\n\n- The Staff Team`,
-      Declined: `Hello ${a.username},\n\nAfter review, your appeal has been DECLINED. Our decision is final.\n\n- The Staff Team`,
-      Pending:  `Hello ${a.username},\n\nYour appeal is PENDING review. Our team is looking into your case. Please be patient.\n\n- The Staff Team`
+    const toastMsgs = {
+      Accepted: '✅ Accepted — email sent to ' + a.email,
+      Unbanned: '🔓 Unbanned — email sent to ' + a.email,
+      Declined: '❌ Declined — email sent to ' + a.email,
+      Pending:  '🕐 Pending — email sent to ' + a.email
     };
+
+    const msgs = {
+      Accepted: `Hi ${a.username},\n\nWe have great news — your appeal has been ACCEPTED!\n\nAfter carefully reviewing your case, our moderation team has decided to lift your punishment. You are now free to rejoin and enjoy the game. Please make sure to read and follow our community rules going forward to avoid any future issues.\n\nWe hope to see you back on the server soon. Welcome back!\n\nBest regards,\nThe Staff Team`,
+
+      Unbanned: `Hi ${a.username},\n\nHello! Sorry for the wait — we are very glad to let you know that you have officially been UNBANNED! 🎉\n\nOur moderation team has reviewed your case and has decided that your ban has been lifted. You are now free to rejoin the game and continue enjoying the experience.\n\nWe appreciate your patience throughout this process. Please take a moment to re-read our community guidelines to make sure this doesn't happen again in the future. We're genuinely happy to have you back and hope you enjoy your time on the server!\n\nIf you experience any issues rejoining, don't hesitate to reach out to a staff member.\n\nSee you in-game! 🎮\n\nBest regards,\nThe Staff Team`,
+
+      Declined: `Hi ${a.username},\n\nThank you for taking the time to submit an appeal. After thoroughly reviewing your case, our moderation team has decided to DENY your appeal.\n\nUnfortunately, we were unable to find sufficient grounds to overturn the punishment. Our decision is final and will not be subject to further review at this time.\n\nWe encourage you to reflect on our community guidelines. If you believe there has been a genuine mistake, you may resubmit a new appeal with additional information after 30 days.\n\nWe appreciate your understanding.\n\nBest regards,\nThe Staff Team`,
+
+      Pending:  `Hi ${a.username},\n\nThank you for reaching out to us! We have received your appeal and it is currently PENDING review.\n\nOur moderation team is carefully looking into your case and will do their best to reach a decision within 3 business days. Please be patient while we investigate.\n\nYou will receive another email once a final decision has been made. In the meantime, please do not submit duplicate appeals as this may delay the process.\n\nBest regards,\nThe Staff Team`
+    };
+
+    if (!emailjsReady) { showToast('EmailJS not loaded — check your connection.', 'err'); return; }
 
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       email:      a.email,
       name:       a.username,
-      title:      'Appeal - ' + status.toUpperCase(),
+      title:      'Appeal — ' + status.toUpperCase(),
       status:     status.toUpperCase(),
       message:    msgs[status],
       punishment: a.type
     }).then(() => {
-      showToast('📧 Email sent to ' + a.email + '!', 'ok');
+      showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok');
     }).catch(err => {
-      showToast('Email failed — check EmailJS config.', 'err');
-      console.error(err);
+      const detail = err && err.text ? ': ' + err.text : '';
+      showToast('Email failed' + detail, 'err');
+      console.error('EmailJS error:', err);
     });
   }
 
   // ── Delete ──
   function deleteAppeal(id) {
     appeals = appeals.filter(a => a.id !== id);
-    saveAppeals();
-    renderAppeals();
+    saveAppeals(); renderAppeals();
   }
 
   // ── Helpers ──
