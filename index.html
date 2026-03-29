@@ -24,7 +24,6 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); min-height: 100vh; }
-
   .admin-banner {
     display: none;
     background: rgba(155,89,182,0.15);
@@ -38,7 +37,6 @@
     text-transform: uppercase;
   }
   .admin-banner.show { display: block; }
-
   nav {
     background: var(--panel);
     border-bottom: 3px solid var(--red);
@@ -56,15 +54,12 @@
     font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
   }
   .tab-btn.active, .tab-btn:hover { border-color: var(--red); color: var(--text); background: rgba(232,34,42,0.12); }
-
   .page { display: none; max-width: 720px; margin: 40px auto; padding: 0 20px; }
   .page.active { display: block; }
-
   .hero { text-align: center; margin-bottom: 36px; }
   .hero-icon { font-size: 3rem; margin-bottom: 12px; }
   .hero h1 { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: var(--text); }
   .hero p { color: var(--muted); margin-top: 8px; font-size: 0.95rem; }
-
   .form-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
   .form-group { margin-bottom: 20px; }
   label { display: block; font-weight: 700; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
@@ -75,7 +70,6 @@
   input:focus, textarea:focus, select:focus { border-color: var(--red); }
   textarea { min-height: 120px; resize: vertical; }
   select option { background: var(--panel); }
-
   .submit-btn {
     width: 100%; background: var(--red); color: #fff; border: none; border-radius: 10px;
     padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
@@ -84,7 +78,6 @@
   .submit-btn:hover { background: var(--dark-red); transform: translateY(-1px); }
   .submit-btn:active { transform: translateY(0); }
   .submit-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; transform: none; font-size: 0.82rem; letter-spacing: 0.3px; padding: 16px 14px; }
-
   .send-code-btn {
     width: 100%; background: var(--purple); color: #fff; border: none; border-radius: 10px;
     padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
@@ -92,14 +85,12 @@
   }
   .send-code-btn:hover { opacity: 0.85; transform: translateY(-1px); }
   .send-code-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
   .verify-btn {
     width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 10px;
     padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
     cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 4px;
   }
   .verify-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-
   .success-box {
     background: rgba(46,204,113,0.1); border: 2px solid var(--green); border-radius: 12px;
     padding: 20px; text-align: center; display: none; margin-top: 20px;
@@ -107,7 +98,6 @@
   .success-box.show { display: block; }
   .success-box h3 { color: var(--green); font-family: 'Fredoka One', cursive; font-size: 1.3rem; }
   .success-box p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
-
   .cooldown-box {
     background: rgba(232,34,42,0.08); border: 2px solid var(--red); border-radius: 12px;
     padding: 20px; text-align: center; display: none; margin-top: 20px;
@@ -115,7 +105,6 @@
   .cooldown-box.show { display: block; }
   .cooldown-box h3 { color: var(--red); font-family: 'Fredoka One', cursive; font-size: 1.2rem; }
   .cooldown-box p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
-
   .login-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; margin: 0 auto; }
   .login-card h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; margin-bottom: 6px; text-align: center; }
   .login-subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; line-height: 1.5; }
@@ -126,7 +115,6 @@
     border-radius: 8px; padding: 10px 14px; line-height: 1.5;
   }
   #code-step { display: none; }
-
   .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
   .admin-header h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; }
   .badge { background: var(--red); color: #fff; border-radius: 20px; padding: 3px 12px; font-size: 0.8rem; font-weight: 700; }
@@ -136,7 +124,6 @@
     font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
   }
   .logout-btn:hover { border-color: var(--red); color: var(--red); }
-
   .whitelist-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
   .whitelist-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.1rem; margin-bottom: 14px; color: var(--purple); }
   .whitelist-row { display: flex; gap: 8px; margin-bottom: 12px; }
@@ -154,12 +141,10 @@
   .remove-tag { cursor: pointer; color: var(--muted); font-size: 1rem; line-height: 1; }
   .remove-tag:hover { color: var(--red); }
   .owner-tag { background: rgba(232,34,42,0.12); border-color: var(--red); color: #f0a0a3; }
-
   .template-notice {
     background: rgba(241,196,15,0.08); border: 1px solid var(--yellow); border-radius: 10px;
     padding: 12px 16px; font-size: 0.82rem; color: #d4b800; margin-bottom: 20px;
   }
-
   .appeals-list { display: flex; flex-direction: column; gap: 14px; }
   .appeal-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
   .appeal-item:hover { border-color: var(--red); }
@@ -167,31 +152,29 @@
   .player-name { font-weight: 800; font-size: 1.05rem; }
   .appeal-email { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
   .status-pill { padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
-  .status-pending  { background: rgba(241,196,15,0.15);  color: var(--yellow); border: 1px solid var(--yellow); }
-  .status-accepted { background: rgba(46,204,113,0.15);  color: var(--green);  border: 1px solid var(--green); }
-  .status-declined { background: rgba(232,34,42,0.15);   color: var(--red);    border: 1px solid var(--red); }
-  .status-unbanned { background: rgba(26,188,156,0.15);  color: var(--teal);   border: 1px solid var(--teal); }
+  .status-pending { background: rgba(241,196,15,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+  .status-accepted { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid var(--green); }
+  .status-declined { background: rgba(232,34,42,0.15); color: var(--red); border: 1px solid var(--red); }
+  .status-unbanned { background: rgba(26,188,156,0.15); color: var(--teal); border: 1px solid var(--teal); }
   .appeal-reason { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; line-height: 1.5; border-left: 3px solid var(--border); padding-left: 12px; }
   .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .action-btn { padding: 7px 16px; border-radius: 8px; border: 2px solid; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; background: none; }
-  .btn-accept  { border-color: var(--green);  color: var(--green); }
-  .btn-accept:hover  { background: rgba(46,204,113,0.15); }
-  .btn-unban   { border-color: var(--teal);   color: var(--teal); }
-  .btn-unban:hover   { background: rgba(26,188,156,0.15); }
-  .btn-decline { border-color: var(--red);    color: var(--red); }
+  .btn-accept { border-color: var(--green); color: var(--green); }
+  .btn-accept:hover { background: rgba(46,204,113,0.15); }
+  .btn-unban { border-color: var(--teal); color: var(--teal); }
+  .btn-unban:hover { background: rgba(26,188,156,0.15); }
+  .btn-decline { border-color: var(--red); color: var(--red); }
   .btn-decline:hover { background: rgba(232,34,42,0.15); }
   .btn-pending { border-color: var(--yellow); color: var(--yellow); }
   .btn-pending:hover { background: rgba(241,196,15,0.15); }
-  .btn-delete  { border-color: var(--border); color: var(--muted); margin-left: auto; }
-  .btn-delete:hover  { border-color: #555; color: var(--text); }
+  .btn-delete { border-color: var(--border); color: var(--muted); margin-left: auto; }
+  .btn-delete:hover { border-color: #555; color: var(--text); }
   .no-appeals { text-align: center; padding: 60px 20px; color: var(--muted); }
   .no-appeals .icon { font-size: 3rem; margin-bottom: 12px; }
-
   .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; font-size: 0.9rem; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 999; }
   .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.toast-ok  { border-color: var(--green); color: var(--green); }
-  .toast.toast-err { border-color: var(--red);   color: var(--red); }
-
+  .toast.toast-ok { border-color: var(--green); color: var(--green); }
+  .toast.toast-err { border-color: var(--red); color: var(--red); }
   @media(max-width:520px){
     .form-card, .login-card { padding: 20px; }
     .action-row { flex-direction: column; }
@@ -200,17 +183,14 @@
 </style>
 </head>
 <body>
-
 <div class="admin-banner" id="admin-banner">🔐 &nbsp; Admin Panel</div>
-
 <nav>
   <div class="logo">⚔️ <span>Roblox</span>Appeals</div>
   <div class="nav-tabs">
     <button class="tab-btn active" id="tab-appeal" onclick="showPage('appeal')">Submit Appeal</button>
-    <button class="tab-btn"        id="tab-admin"  onclick="showPage('admin')">Admin Panel</button>
+    <button class="tab-btn" id="tab-admin" onclick="showPage('admin')">Admin Panel</button>
   </div>
 </nav>
-
 <!-- ════════ APPEAL PAGE ════════ -->
 <div class="page active" id="page-appeal">
   <div class="hero">
@@ -257,15 +237,12 @@
     </div>
   </div>
 </div>
-
 <!-- ════════ ADMIN PAGE ════════ -->
 <div class="page" id="page-admin">
-
   <div id="admin-login">
     <div class="login-card">
       <h2>🔐 Admin Login</h2>
       <p class="login-subtitle">Enter your whitelisted email. A verification code will be sent to the staff account — contact a staff member to receive it.</p>
-
       <div id="email-step">
         <div class="form-group">
           <label>Your Whitelisted Email</label>
@@ -275,7 +252,6 @@
         <div class="login-error" id="login-error">🚫 Access denied. This email is not whitelisted.</div>
         <div class="login-info" id="login-info">📧 A code has been sent to the staff account! Ask a staff member for the 6-digit code to continue.</div>
       </div>
-
       <div id="code-step">
         <div class="form-group" style="margin-top:4px">
           <label>Verification Code</label>
@@ -289,7 +265,6 @@
       </div>
     </div>
   </div>
-
   <div id="admin-panel" style="display:none">
     <div class="admin-header">
       <h2>📬 Appeals</h2>
@@ -298,11 +273,9 @@
         <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
       </div>
     </div>
-
     <div class="template-notice" id="template-notice">
       ⚠️ <strong>EmailJS not configured.</strong> Status updates will save but emails won't send until credentials are set.
     </div>
-
     <div class="whitelist-card">
       <h3>🛡️ Whitelisted Admins</h3>
       <div class="whitelist-row">
@@ -311,61 +284,52 @@
       </div>
       <div class="whitelist-list" id="whitelist-list"></div>
     </div>
-
     <div class="appeals-list" id="appeals-list">
       <div class="no-appeals"><div class="icon">📭</div><p>No appeals yet. Check back later!</p></div>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
   // ── Config ──
-  const EMAILJS_SERVICE_ID  = 'service_gmt5cvx';
+  const EMAILJS_SERVICE_ID = 'service_gmt5cvx';
   const EMAILJS_TEMPLATE_ID = 'template_kreqxod';
-  const EMAILJS_PUBLIC_KEY  = 'us7G33aq7_9z5zwcv';
-  const STAFF_NOTIFY_EMAIL  = 'fakeaquatic@gmail.com';
-  const OWNER_EMAIL         = 'noahhemingway1116@gmail.com';
-  const COOLDOWN_MS         = 10 * 24 * 60 * 60 * 1000; // 10 days
-  const SESSION_DURATION_MS = 7  * 24 * 60 * 60 * 1000; // 7 day session
-
+  const EMAILJS_PUBLIC_KEY = 'us7G33aq7_9z5zwcv';
+  const STAFF_NOTIFY_EMAIL = 'fakeaquatic@gmail.com';
+  const OWNER_EMAIL = 'noahhemingway1116@gmail.com';
+  const COOLDOWN_MS = 10 * 24 * 60 * 60 * 1000; // 10 days
+  const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 day session
   // ── State ──
-  let appeals   = JSON.parse(localStorage.getItem('roblox_appeals')   || '[]');
+  let appeals = JSON.parse(localStorage.getItem('roblox_appeals') || '[]');
   let whitelist = JSON.parse(localStorage.getItem('roblox_whitelist') || '[]');
-  let pendingCode       = null;
+  let pendingCode = null;
   let pendingLoginEmail = null;
-  let userIP            = null;
-
+  let userIP = null;
   if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL)) {
     whitelist.unshift(OWNER_EMAIL);
     saveWhitelist();
   }
-
   // ── EmailJS Init (v4) ──
   let emailjsReady = false;
   window.addEventListener('load', () => {
     try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); emailjsReady = true; }
     catch(e) { console.error('EmailJS init failed:', e); }
-
-    // Fetch IP then init cooldown + session checks
     fetchIP().then(() => {
       checkCooldownOnLoad();
       checkAdminSession();
+      restorePendingLogin();
     });
   });
-
   // ══════════════════════════════════════════════
   // IP FETCH — used alongside fingerprint
   // ══════════════════════════════════════════════
   async function fetchIP() {
     try {
-      const res  = await fetch('https://api.ipify.org?format=json');
+      const res = await fetch('https://api.ipify.org?format=json');
       const data = await res.json();
       userIP = data.ip || null;
     } catch(e) { userIP = null; }
   }
-
   // ══════════════════════════════════════════════
   // HWID FINGERPRINT
   // ══════════════════════════════════════════════
@@ -388,14 +352,11 @@
     for (let i = 0; i < fp.length; i++) { h = Math.imul(31, h) + fp.charCodeAt(i) | 0; }
     return 'fp_' + Math.abs(h).toString(36);
   }
-
-  // Returns all tracking keys: fingerprint + IP
   function getTrackingKeys() {
     const keys = [getFingerprint()];
     if (userIP) keys.push('ip_' + userIP.replace(/\./g, '_'));
     return keys;
   }
-
   // ── Cooldown (keyed by ALL tracking keys) ──
   function getCooldownRemaining() {
     const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
@@ -408,13 +369,11 @@
     }
     return maxRemaining > 0 ? maxRemaining : 0;
   }
-
   function setCooldown() {
     const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
     for (const key of getTrackingKeys()) { data[key] = Date.now(); }
     localStorage.setItem('appeal_cooldowns', JSON.stringify(data));
   }
-
   function checkCooldownOnLoad() {
     const remaining = getCooldownRemaining();
     if (remaining > 0) {
@@ -423,7 +382,6 @@
       btn.textContent = '⏳ Wait ' + fmtTime(remaining) + ' Before Appealing Again';
     }
   }
-
   function fmtTime(ms) {
     const d = Math.floor(ms / 86400000);
     const h = Math.floor((ms % 86400000) / 3600000);
@@ -432,14 +390,12 @@
     if (h > 0) return h + ' hour' + (h !== 1 ? 's' : '') + (m > 0 ? ' and ' + m + 'm' : '');
     return m + ' minute' + (m !== 1 ? 's' : '');
   }
-
   // ══════════════════════════════════════════════
-  // ADMIN SESSION — persists 7 days
+  // ADMIN SESSION — persists 30 days
   // ══════════════════════════════════════════════
   function saveAdminSession(email) {
     localStorage.setItem('admin_session', JSON.stringify({ email: email.toLowerCase(), expires: Date.now() + SESSION_DURATION_MS }));
   }
-
   function getAdminSession() {
     try {
       const s = JSON.parse(localStorage.getItem('admin_session') || 'null');
@@ -448,17 +404,13 @@
       return s;
     } catch(e) { return null; }
   }
-
   function clearAdminSession() { localStorage.removeItem('admin_session'); }
-
   function checkAdminSession() {
     const session = getAdminSession();
     if (!session) return;
     if (!whitelist.map(e => e.toLowerCase()).includes(session.email)) { clearAdminSession(); return; }
-    // Valid — skip login flow
     openAdminPanel();
   }
-
   function openAdminPanel() {
     document.getElementById('admin-login').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
@@ -466,7 +418,21 @@
     renderWhitelist();
     renderAppeals();
   }
-
+  // ── Persist pending login code across refresh (sessionStorage) ──
+  function restorePendingLogin() {
+    const dataStr = sessionStorage.getItem('pending_admin_login');
+    if (!dataStr) return;
+    const data = JSON.parse(dataStr);
+    if (Date.now() > data.expires) {
+      sessionStorage.removeItem('pending_admin_login');
+      return;
+    }
+    pendingCode = data.code;
+    pendingLoginEmail = data.email;
+    document.getElementById('email-step').style.display = 'none';
+    document.getElementById('code-step').style.display = 'block';
+    document.getElementById('login-info').style.display = 'block';
+  }
   // ── Navigation ──
   function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -475,51 +441,41 @@
     document.getElementById('tab-' + page).classList.add('active');
     document.getElementById('admin-banner').classList.toggle('show', page === 'admin');
   }
-
   // ── Submit Appeal ──
   function submitAppeal() {
-    const username  = document.getElementById('username').value.trim();
-    const email     = document.getElementById('player-email').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('player-email').value.trim();
     const banReason = document.getElementById('ban-reason').value.trim();
-    const text      = document.getElementById('appeal-text').value.trim();
-    const type      = document.getElementById('punishment-type').value;
-
+    const text = document.getElementById('appeal-text').value.trim();
+    const type = document.getElementById('punishment-type').value;
     if (!username || !email || !text || !type) { showToast('Please fill in all fields!', 'err'); return; }
     if (!email.includes('@')) { showToast('Please enter a valid email.', 'err'); return; }
-
     const remaining = getCooldownRemaining();
     if (remaining > 0) {
       const btn = document.getElementById('appeal-submit-btn');
       btn.disabled = true;
       btn.textContent = '⏳ Wait ' + fmtTime(remaining) + ' Before Appealing Again';
-      document.getElementById('cooldown-msg').textContent =
-        'You must wait 10 days before submitting another appeal. This is tracked by your device fingerprint and IP address — clearing your browser data will not bypass it.';
+      document.getElementById('cooldown-msg').textContent = 'You must wait 10 days before submitting another appeal.';
       document.getElementById('cooldown-box').classList.add('show');
       document.getElementById('success-box').classList.remove('show');
       return;
     }
-
     const appeal = { id: Date.now(), username, email, banReason, text, type, status: 'Pending', date: new Date().toLocaleDateString() };
     appeals.unshift(appeal);
     saveAppeals();
     setCooldown();
-
-    // Lock button with cooldown label
     const btn = document.getElementById('appeal-submit-btn');
     btn.disabled = true;
     btn.textContent = '⏳ Wait 10 Days Before Appealing Again';
-
     document.getElementById('cooldown-box').classList.remove('show');
     document.getElementById('success-box').classList.add('show');
-
-    // ── Notify staff of new appeal ──
     if (emailjsReady) {
       emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        email:      STAFF_NOTIFY_EMAIL,
-        name:       'Staff Team',
-        title:      '📬 New Appeal — ' + username,
-        status:     'NEW APPEAL',
-        message:    'A new appeal has been submitted!\n\n'
+        email: STAFF_NOTIFY_EMAIL,
+        name: 'Staff Team',
+        title: '📬 New Appeal — ' + username,
+        status: 'NEW APPEAL',
+        message: 'A new appeal has been submitted!\n\n'
                   + 'Username: ' + username + '\n'
                   + 'Email: ' + email + '\n'
                   + 'Punishment: ' + type
@@ -529,90 +485,86 @@
         punishment: type
       }).catch(err => console.error('Staff notify failed:', err));
     }
-
     setTimeout(() => {
       document.getElementById('success-box').classList.remove('show');
       ['username','player-email','ban-reason','appeal-text'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('punishment-type').value = '';
     }, 5000);
   }
-
   // ── Admin Login ──
   function sendCode() {
     const entered = document.getElementById('admin-email').value.trim().toLowerCase();
     const allowed = whitelist.map(e => e.toLowerCase());
-    const errEl   = document.getElementById('login-error');
-    const infoEl  = document.getElementById('login-info');
-    const btn     = document.getElementById('send-code-btn');
-
+    const errEl = document.getElementById('login-error');
+    const infoEl = document.getElementById('login-info');
+    const btn = document.getElementById('send-code-btn');
     errEl.style.display = infoEl.style.display = 'none';
-
     if (!entered || !entered.includes('@')) { showToast('Enter a valid email.', 'err'); return; }
     if (!allowed.includes(entered)) {
       errEl.style.display = 'block';
       setTimeout(() => { errEl.style.display = 'none'; }, 3500);
       return;
     }
-
-    pendingCode       = String(Math.floor(100000 + Math.random() * 900000));
+    pendingCode = String(Math.floor(100000 + Math.random() * 900000));
     pendingLoginEmail = entered;
-    btn.disabled    = true;
+    btn.disabled = true;
     btn.textContent = '⏳ Sending...';
-
     if (!emailjsReady) {
       showToast('EmailJS not ready — check connection.', 'err');
       btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE'; return;
     }
-
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email:      STAFF_NOTIFY_EMAIL,
-      name:       'Staff Team',
-      title:      'Admin Login Verification Code',
-      status:     'LOGIN CODE',
-      message:    'Admin login requested by: ' + entered + '\n\nVerification Code: ' + pendingCode + '\n\nShare this code ONLY with the person trying to log in. This code expires in 10 minutes.',
+      email: STAFF_NOTIFY_EMAIL,
+      name: 'Staff Team',
+      title: 'Admin Login Verification Code',
+      status: 'LOGIN CODE',
+      message: 'Admin login requested by: ' + entered + '\n\nVerification Code: ' + pendingCode + '\n\nShare this code ONLY with the person trying to log in. This code expires in 10 minutes.',
       punishment: 'N/A'
     }).then(() => {
       infoEl.style.display = 'block';
       document.getElementById('email-step').style.display = 'none';
-      document.getElementById('code-step').style.display  = 'block';
+      document.getElementById('code-step').style.display = 'block';
+      // persist for refresh
+      sessionStorage.setItem('pending_admin_login', JSON.stringify({
+        email: entered,
+        code: pendingCode,
+        expires: Date.now() + 600000
+      }));
       btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
-      setTimeout(() => { pendingCode = null; }, 600000);
+      setTimeout(() => { pendingCode = null; sessionStorage.removeItem('pending_admin_login'); }, 600000);
     }).catch(err => {
       showToast('Failed to send code. Check EmailJS config.', 'err');
       console.error(err);
       btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
     });
   }
-
   function verifyCode() {
     const entered = document.getElementById('admin-code').value.trim();
-    const errEl   = document.getElementById('code-error');
+    const errEl = document.getElementById('code-error');
     errEl.style.display = 'none';
-
     if (!pendingCode) { showToast('Code expired. Please request a new one.', 'err'); resetLogin(); return; }
-
     if (entered === pendingCode) {
       pendingCode = null;
+      sessionStorage.removeItem('pending_admin_login');
       saveAdminSession(pendingLoginEmail || '');
       openAdminPanel();
-      showToast('✅ Logged in — session saved for 7 days', 'ok');
+      showToast('✅ Logged in — session saved for 30 days', 'ok');
     } else {
       errEl.style.display = 'block';
       document.getElementById('admin-code').value = '';
       setTimeout(() => { errEl.style.display = 'none'; }, 3500);
     }
   }
-
   function resetLogin() {
     pendingCode = null; pendingLoginEmail = null;
+    sessionStorage.removeItem('pending_admin_login');
     document.getElementById('email-step').style.display = 'block';
-    document.getElementById('code-step').style.display  = 'none';
+    document.getElementById('code-step').style.display = 'none';
     document.getElementById('admin-email').value = '';
-    document.getElementById('admin-code').value  = '';
-    document.getElementById('login-info').style.display  = 'none';
+    document.getElementById('admin-code').value = '';
+    document.getElementById('login-info').style.display = 'none';
     document.getElementById('login-error').style.display = 'none';
   }
-
   function adminLogout() {
     clearAdminSession();
     document.getElementById('admin-panel').style.display = 'none';
@@ -620,7 +572,6 @@
     resetLogin();
     showToast('Logged out.', 'ok');
   }
-
   // ── Whitelist ──
   function addWhitelist() {
     const val = document.getElementById('whitelist-input').value.trim().toLowerCase();
@@ -631,13 +582,11 @@
     document.getElementById('whitelist-input').value = '';
     showToast('✅ ' + val + ' added!', 'ok');
   }
-
   function removeWhitelist(email) {
     if (email.toLowerCase() === OWNER_EMAIL) { showToast('Cannot remove the owner!', 'err'); return; }
     whitelist = whitelist.filter(e => e.toLowerCase() !== email.toLowerCase());
     saveWhitelist(); renderWhitelist();
   }
-
   function renderWhitelist() {
     document.getElementById('whitelist-list').innerHTML = whitelist.map(e => `
       <div class="whitelist-tag ${e.toLowerCase()===OWNER_EMAIL?'owner-tag':''}">
@@ -647,7 +596,6 @@
           : `<span class="remove-tag" onclick="removeWhitelist('${esc(e)}')" title="Remove">✕</span>`}
       </div>`).join('');
   }
-
   // ── Render Appeals ──
   function renderAppeals() {
     const list = document.getElementById('appeals-list');
@@ -668,74 +616,12 @@
         ${a.banReason ? `<div class="appeal-email" style="margin-bottom:8px">Ban reason: ${esc(a.banReason)}</div>` : ''}
         <div class="appeal-reason">${esc(a.text)}</div>
         <div class="action-row">
-          <button class="action-btn btn-accept"  onclick="setStatus(${a.id},'Accepted')">✅ Accept</button>
-          <button class="action-btn btn-unban"   onclick="setStatus(${a.id},'Unbanned')">🔓 Unbanned</button>
+          <button class="action-btn btn-accept" onclick="setStatus(${a.id},'Accepted')">✅ Accept</button>
+          <button class="action-btn btn-unban" onclick="setStatus(${a.id},'Unbanned')">🔓 Unbanned</button>
           <button class="action-btn btn-decline" onclick="setStatus(${a.id},'Declined')">❌ Decline</button>
           <button class="action-btn btn-pending" onclick="setStatus(${a.id},'Pending')">🕐 Pending</button>
-          <button class="action-btn btn-delete"  onclick="deleteAppeal(${a.id})">🗑 Delete</button>
+          <button class="action-btn btn-delete" onclick="deleteAppeal(${a.id})">🗑 Delete</button>
         </div>
       </div>`).join('');
   }
-
-  // ── Set Status + Send Email ──
-  function setStatus(id, status) {
-    const a = appeals.find(x => x.id === id);
-    if (!a) return;
-    a.status = status;
-    saveAppeals(); renderAppeals();
-
-    if (EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID' || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-      showToast('Status saved! (Configure EmailJS to enable emails)', 'ok'); return;
-    }
-
-    const toastMsgs = {
-      Accepted: '✅ Accepted — email sent to ' + a.email,
-      Unbanned: '🔓 Unbanned — email sent to ' + a.email,
-      Declined: '❌ Declined — email sent to ' + a.email,
-      Pending:  '🕐 Pending — email sent to ' + a.email
-    };
-
-    const msgs = {
-      Accepted: `Hi ${a.username},\n\nWe have great news — your appeal has been ACCEPTED!\n\nAfter carefully reviewing your case, our moderation team has decided to lift your punishment. You are now free to rejoin and enjoy the game. Please make sure to read and follow our community rules going forward to avoid any future issues.\n\nWelcome back!\n\nBest regards,\nThe Staff Team`,
-      Unbanned: `Hi ${a.username},\n\nYou have officially been UNBANNED! 🎉\n\nOur moderation team reviewed your case and lifted your ban. You are now free to rejoin the game.\n\nPlease re-read our community guidelines to avoid future issues. See you in-game! 🎮\n\nBest regards,\nThe Staff Team`,
-      Declined: `Hi ${a.username},\n\nAfter thoroughly reviewing your case, our moderation team has decided to DENY your appeal.\n\nWe were unable to find sufficient grounds to overturn the punishment. Our decision is final at this time.\n\nYou may resubmit a new appeal with additional information after 10 days.\n\nBest regards,\nThe Staff Team`,
-      Pending:  `Hi ${a.username},\n\nYour appeal is currently PENDING review.\n\nOur team will do their best to reach a decision within 3 business days. Please do not submit duplicate appeals as this may delay the process.\n\nBest regards,\nThe Staff Team`
-    };
-
-    if (!emailjsReady) { showToast('EmailJS not loaded — check your connection.', 'err'); return; }
-
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email:      a.email,
-      name:       a.username,
-      title:      'Appeal — ' + status.toUpperCase(),
-      status:     status.toUpperCase(),
-      message:    msgs[status],
-      punishment: a.type
-    }).then(() => {
-      showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok');
-    }).catch(err => {
-      const detail = err && err.text ? ': ' + err.text : '';
-      showToast('Email failed' + detail, 'err');
-      console.error('EmailJS error:', err);
-    });
-  }
-
-  // ── Delete ──
-  function deleteAppeal(id) {
-    appeals = appeals.filter(a => a.id !== id);
-    saveAppeals(); renderAppeals();
-  }
-
-  // ── Helpers ──
-  function saveAppeals()   { localStorage.setItem('roblox_appeals',   JSON.stringify(appeals)); }
-  function saveWhitelist() { localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist)); }
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function showToast(msg, type='ok') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast toast-' + type + ' show';
-    setTimeout(() => t.classList.remove('show'), 3500);
-  }
-</script>
-</body>
-</html>
+  // ── Set Status + Send Email ─
