@@ -6,6 +6,9 @@
 <title>Steal Time From Others Appeals</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root {
     --red: #e8222a;
@@ -115,7 +118,7 @@
     border-radius: 8px; padding: 10px 14px; line-height: 1.5;
   }
   #code-step { display: none; }
-  .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
   .admin-header h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; }
   .badge { background: var(--red); color: #fff; border-radius: 20px; padding: 3px 12px; font-size: 0.8rem; font-weight: 700; }
   .logout-btn {
@@ -141,17 +144,13 @@
   .remove-tag { cursor: pointer; color: var(--muted); font-size: 1rem; line-height: 1; }
   .remove-tag:hover { color: var(--red); }
   .owner-tag { background: rgba(232,34,42,0.12); border-color: var(--red); color: #f0a0a3; }
-  .template-notice {
-    background: rgba(241,196,15,0.08); border: 1px solid var(--yellow); border-radius: 10px;
-    padding: 12px 16px; font-size: 0.82rem; color: #d4b800; margin-bottom: 20px;
-  }
   .appeals-list { display: flex; flex-direction: column; gap: 14px; }
   .appeal-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
   .appeal-item:hover { border-color: var(--red); }
   .appeal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .player-name { font-weight: 800; font-size: 1.05rem; }
   .appeal-email { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-  .status-pill { padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+  .status-pill { padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
   .status-pending { background: rgba(241,196,15,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
   .status-accepted { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid var(--green); }
   .status-declined { background: rgba(232,34,42,0.15); color: var(--red); border: 1px solid var(--red); }
@@ -171,7 +170,8 @@
   .btn-delete:hover { border-color: #555; color: var(--text); }
   .no-appeals { text-align: center; padding: 60px 20px; color: var(--muted); }
   .no-appeals .icon { font-size: 3rem; margin-bottom: 12px; }
-  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; font-size: 0.9rem; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 999; }
+  .loading-box { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.9rem; }
+  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; font-size: 0.9rem; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 999; max-width: 320px; }
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.toast-ok { border-color: var(--green); color: var(--green); }
   .toast.toast-err { border-color: var(--red); color: var(--red); }
@@ -191,6 +191,7 @@
     <button class="tab-btn" id="tab-admin" onclick="showPage('admin')">Admin Panel</button>
   </div>
 </nav>
+
 <!-- ════════ APPEAL PAGE ════════ -->
 <div class="page active" id="page-appeal">
   <div class="hero">
@@ -237,6 +238,7 @@
     </div>
   </div>
 </div>
+
 <!-- ════════ ADMIN PAGE ════════ -->
 <div class="page" id="page-admin">
   <div id="admin-login">
@@ -268,14 +270,11 @@
   <div id="admin-panel" style="display:none">
     <div class="admin-header">
       <h2>📬 Appeals</h2>
-      <div style="display:flex;align-items:center;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span class="badge" id="appeal-count">0</span>
-        <button class="logout-btn" style="border-color:var(--teal);color:var(--teal)" onclick="clearAllCooldowns()">🔓 Clear All Cooldowns</button>
+        <button class="logout-btn" style="border-color:var(--teal);color:var(--teal)" onclick="clearAllCooldowns()">🔓 Clear Cooldowns</button>
         <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
       </div>
-    </div>
-    <div class="template-notice" id="template-notice">
-      ⚠️ <strong>EmailJS not configured.</strong> Status updates will save but emails won't send until credentials are set.
     </div>
     <div class="whitelist-card">
       <h3>🛡️ Whitelisted Admins</h3>
@@ -286,31 +285,50 @@
       <div class="whitelist-list" id="whitelist-list"></div>
     </div>
     <div class="appeals-list" id="appeals-list">
-      <div class="no-appeals"><div class="icon">📭</div><p>No appeals yet. Check back later!</p></div>
+      <div class="loading-box">⏳ Loading appeals...</div>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
+
 <script>
-  // ── Config ──
+  // ══════════════════════════════════════════════
+  // FIREBASE CONFIG
+  // ══════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey: "AIzaSyBSc1wAwQRlH8AdDhkiMnByIXZq29rTo_Q",
+    authDomain: "stfo-appeals.firebaseapp.com",
+    projectId: "stfo-appeals",
+    storageBucket: "stfo-appeals.firebasestorage.app",
+    messagingSenderId: "199350287573",
+    appId: "1:199350287573:web:f3b31e415bcd407299f65c"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const appealsCol = db.collection('appeals');
+
+  // ── EmailJS Config ──
   const EMAILJS_SERVICE_ID = 'service_gmt5cvx';
   const EMAILJS_TEMPLATE_ID = 'template_kreqxod';
   const EMAILJS_PUBLIC_KEY = 'us7G33aq7_9z5zwcv';
   const STAFF_NOTIFY_EMAIL = 'fakeaquatic@gmail.com';
   const OWNER_EMAIL = 'noahhemingway1116@gmail.com';
-  const COOLDOWN_MS = 10 * 24 * 60 * 60 * 1000; // 10 days
-  const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 day session
+  const COOLDOWN_MS = 10 * 24 * 60 * 60 * 1000;
+  const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
+
   // ── State ──
-  let appeals = JSON.parse(localStorage.getItem('roblox_appeals') || '[]');
   let whitelist = JSON.parse(localStorage.getItem('roblox_whitelist') || '[]');
   let pendingCode = null;
   let pendingLoginEmail = null;
   let userIP = null;
+  let unsubscribeAppeals = null; // Firestore real-time listener
+
   if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL)) {
     whitelist.unshift(OWNER_EMAIL);
     saveWhitelist();
   }
-  // ── EmailJS Init (v4) ──
+
+  // ── EmailJS Init ──
   let emailjsReady = false;
   window.addEventListener('load', () => {
     try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); emailjsReady = true; }
@@ -320,8 +338,9 @@
     fetchIP().then(() => checkCooldownOnLoad());
     checkResetParam();
   });
+
   // ══════════════════════════════════════════════
-  // IP FETCH
+  // IP + FINGERPRINT
   // ══════════════════════════════════════════════
   async function fetchIP() {
     try {
@@ -330,9 +349,7 @@
       userIP = data.ip || null;
     } catch(e) { userIP = null; }
   }
-  // ══════════════════════════════════════════════
-  // HWID FINGERPRINT
-  // ══════════════════════════════════════════════
+
   function getFingerprint() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -340,8 +357,7 @@
     ctx.font = '14px Arial';
     ctx.fillText('rblx-appeal-fp', 2, 2);
     const fp = [
-      navigator.userAgent,
-      navigator.language,
+      navigator.userAgent, navigator.language,
       screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
       new Date().getTimezoneOffset(),
       navigator.hardwareConcurrency || 0,
@@ -352,12 +368,14 @@
     for (let i = 0; i < fp.length; i++) { h = Math.imul(31, h) + fp.charCodeAt(i) | 0; }
     return 'fp_' + Math.abs(h).toString(36);
   }
+
   function getTrackingKeys() {
     const keys = [getFingerprint()];
     if (userIP) keys.push('ip_' + userIP.replace(/\./g, '_'));
     return keys;
   }
-  // ── Cooldown
+
+  // ── Cooldown (still local — per device by design)
   function getCooldownRemaining() {
     const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
     let maxRemaining = 0;
@@ -369,11 +387,13 @@
     }
     return maxRemaining > 0 ? maxRemaining : 0;
   }
+
   function setCooldown() {
     const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
     for (const key of getTrackingKeys()) { data[key] = Date.now(); }
     localStorage.setItem('appeal_cooldowns', JSON.stringify(data));
   }
+
   function checkCooldownOnLoad() {
     const remaining = getCooldownRemaining();
     if (remaining > 0) {
@@ -382,6 +402,7 @@
       btn.textContent = '⏳ Wait ' + fmtTime(remaining) + ' Before Appealing Again';
     }
   }
+
   function fmtTime(ms) {
     const d = Math.floor(ms / 86400000);
     const h = Math.floor((ms % 86400000) / 3600000);
@@ -390,8 +411,39 @@
     if (h > 0) return h + ' hour' + (h !== 1 ? 's' : '') + (m > 0 ? ' and ' + m + 'm' : '');
     return m + ' minute' + (m !== 1 ? 's' : '');
   }
+
+  // ── Clear cooldowns via shareable link
+  function clearAllCooldowns() {
+    const resetTime = Date.now();
+    const base = window.location.href.split('?')[0];
+    const link = base + '?clearcd=' + resetTime;
+    navigator.clipboard.writeText(link).then(() => {
+      showToast('✅ Reset link copied! Share it in Discord so players can click it.', 'ok');
+    }).catch(() => {
+      prompt('Share this link with players to clear their cooldown:', link);
+    });
+  }
+
+  function checkResetParam() {
+    const params = new URLSearchParams(window.location.search);
+    const resetTime = parseInt(params.get('clearcd'));
+    if (!resetTime) return;
+    const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
+    let cleared = false;
+    for (const key of Object.keys(data)) {
+      if (data[key] <= resetTime) { delete data[key]; cleared = true; }
+    }
+    if (cleared) {
+      localStorage.setItem('appeal_cooldowns', JSON.stringify(data));
+      const btn = document.getElementById('appeal-submit-btn');
+      if (btn && btn.disabled) { btn.disabled = false; btn.textContent = '🚀 SUBMIT APPEAL'; }
+      showToast('✅ Your cooldown has been cleared — you can reapply!', 'ok');
+    }
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
   // ══════════════════════════════════════════════
-  // ADMIN SESSION — 30 days
+  // ADMIN SESSION
   // ══════════════════════════════════════════════
   function saveAdminSession(email) {
     localStorage.setItem('admin_session', JSON.stringify({ email: email.toLowerCase(), expires: Date.now() + SESSION_DURATION_MS }));
@@ -410,23 +462,20 @@
     if (!whitelist.map(e => e.toLowerCase()).includes(session.email)) { clearAdminSession(); return; }
     openAdminPanel();
   }
+
   function openAdminPanel() {
     document.getElementById('admin-login').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
-    document.getElementById('template-notice').style.display = 'none';
     renderWhitelist();
-    renderAppeals();
+    startAppealListener();
   }
-  // ── Pending login code (refresh fix)
+
   function restorePendingLogin() {
     if (document.getElementById('admin-panel').style.display === 'block') return;
     const dataStr = sessionStorage.getItem('pending_admin_login');
     if (!dataStr) return;
     const data = JSON.parse(dataStr);
-    if (Date.now() > data.expires) {
-      sessionStorage.removeItem('pending_admin_login');
-      return;
-    }
+    if (Date.now() > data.expires) { sessionStorage.removeItem('pending_admin_login'); return; }
     pendingCode = data.code;
     pendingLoginEmail = data.email;
     document.getElementById('email-step').style.display = 'none';
@@ -434,69 +483,182 @@
     document.getElementById('login-info').style.display = 'block';
   }
 
-  // ── Navigation — BUG FIX: re-read localStorage and re-render appeals when switching to admin tab
+  // ══════════════════════════════════════════════
+  // NAVIGATION
+  // ══════════════════════════════════════════════
   function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
     document.getElementById('tab-' + page).classList.add('active');
     document.getElementById('admin-banner').classList.toggle('show', page === 'admin');
-
-    // FIX: When switching to admin tab, sync from localStorage and refresh the list
-    if (page === 'admin') {
-      appeals = JSON.parse(localStorage.getItem('roblox_appeals') || '[]');
-      const panel = document.getElementById('admin-panel');
-      if (panel && panel.style.display !== 'none') {
-        renderAppeals();
-      }
+    // Re-start listener if admin panel is open
+    if (page === 'admin' && document.getElementById('admin-panel').style.display !== 'none') {
+      startAppealListener();
     }
   }
 
-  // ── Submit Appeal
-  function submitAppeal() {
+  // ══════════════════════════════════════════════
+  // FIRESTORE — REAL-TIME APPEALS LISTENER
+  // ══════════════════════════════════════════════
+  function startAppealListener() {
+    if (unsubscribeAppeals) return; // Already listening
+    document.getElementById('appeals-list').innerHTML = '<div class="loading-box">⏳ Loading appeals...</div>';
+    unsubscribeAppeals = appealsCol
+      .orderBy('timestamp', 'desc')
+      .onSnapshot(snapshot => {
+        const appeals = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAppeals(appeals);
+      }, err => {
+        console.error('Firestore error:', err);
+        document.getElementById('appeals-list').innerHTML = '<div class="no-appeals"><div class="icon">⚠️</div><p>Failed to load appeals. Check Firestore rules.</p></div>';
+      });
+  }
+
+  function stopAppealListener() {
+    if (unsubscribeAppeals) { unsubscribeAppeals(); unsubscribeAppeals = null; }
+  }
+
+  // ══════════════════════════════════════════════
+  // SUBMIT APPEAL → FIRESTORE
+  // ══════════════════════════════════════════════
+  async function submitAppeal() {
     const username = document.getElementById('username').value.trim();
     const email = document.getElementById('player-email').value.trim();
     const banReason = document.getElementById('ban-reason').value.trim();
     const text = document.getElementById('appeal-text').value.trim();
     const type = document.getElementById('punishment-type').value;
+
     if (!username || !email || !text || !type) { showToast('Please fill in all fields!', 'err'); return; }
     if (!email.includes('@')) { showToast('Please enter a valid email.', 'err'); return; }
+
     const remaining = getCooldownRemaining();
     if (remaining > 0) {
       const btn = document.getElementById('appeal-submit-btn');
       btn.disabled = true;
       btn.textContent = '⏳ Wait ' + fmtTime(remaining) + ' Before Appealing Again';
-      document.getElementById('cooldown-msg').textContent = 'You must wait 10 days before submitting another appeal.';
       document.getElementById('cooldown-box').classList.add('show');
       document.getElementById('success-box').classList.remove('show');
       return;
     }
-    const appeal = { id: Date.now(), username, email, banReason, text, type, status: 'Pending', date: new Date().toLocaleDateString() };
-    appeals.unshift(appeal);
-    saveAppeals();
-    setCooldown();
+
     const btn = document.getElementById('appeal-submit-btn');
     btn.disabled = true;
-    btn.textContent = '⏳ Wait 10 Days Before Appealing Again';
-    document.getElementById('cooldown-box').classList.remove('show');
-    document.getElementById('success-box').classList.add('show');
-    if (emailjsReady) {
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        email: STAFF_NOTIFY_EMAIL,
-        name: 'Staff Team',
-        title: '📬 New Appeal — ' + username,
-        status: 'NEW APPEAL',
-        message: 'A new appeal has been submitted!\n\nUsername: ' + username + '\nEmail: ' + email + '\nPunishment: ' + type + (banReason ? '\nBan Reason: ' + banReason : '') + '\n\nAppeal:\n' + text + '\n\nLog in to the admin panel to review and respond.',
-        punishment: type
-      }).catch(err => console.error('Staff notify failed:', err));
+    btn.textContent = '⏳ Submitting...';
+
+    try {
+      await appealsCol.add({
+        username, email, banReason, text, type,
+        status: 'Pending',
+        date: new Date().toLocaleDateString(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      setCooldown();
+      btn.textContent = '⏳ Wait 10 Days Before Appealing Again';
+      document.getElementById('cooldown-box').classList.remove('show');
+      document.getElementById('success-box').classList.add('show');
+
+      if (emailjsReady) {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          email: STAFF_NOTIFY_EMAIL, name: 'Staff Team',
+          title: '📬 New Appeal — ' + username, status: 'NEW APPEAL',
+          message: 'A new appeal has been submitted!\n\nUsername: ' + username + '\nEmail: ' + email + '\nPunishment: ' + type + (banReason ? '\nBan Reason: ' + banReason : '') + '\n\nAppeal:\n' + text,
+          punishment: type
+        }).catch(err => console.error('Staff notify failed:', err));
+      }
+
+      setTimeout(() => {
+        document.getElementById('success-box').classList.remove('show');
+        ['username','player-email','ban-reason','appeal-text'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('punishment-type').value = '';
+      }, 5000);
+
+    } catch(err) {
+      console.error('Firestore submit error:', err);
+      showToast('Failed to submit appeal. Try again.', 'err');
+      btn.disabled = false;
+      btn.textContent = '🚀 SUBMIT APPEAL';
     }
-    setTimeout(() => {
-      document.getElementById('success-box').classList.remove('show');
-      ['username','player-email','ban-reason','appeal-text'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('punishment-type').value = '';
-    }, 5000);
   }
-  // ── Admin Login
+
+  // ══════════════════════════════════════════════
+  // RENDER APPEALS
+  // ══════════════════════════════════════════════
+  function renderAppeals(appeals) {
+    const list = document.getElementById('appeals-list');
+    document.getElementById('appeal-count').textContent = appeals.length;
+    if (appeals.length === 0) {
+      list.innerHTML = '<div class="no-appeals"><div class="icon">📭</div><p>No appeals yet!</p></div>';
+      return;
+    }
+    list.innerHTML = appeals.map(a => `
+      <div class="appeal-item" id="appeal-${a.id}">
+        <div class="appeal-top">
+          <div>
+            <div class="player-name">🎮 ${esc(a.username)}</div>
+            <div class="appeal-email">${esc(a.email)} · ${a.date} · ${esc(a.type)}</div>
+          </div>
+          <span class="status-pill status-${(a.status||'pending').toLowerCase()}">${a.status || 'Pending'}</span>
+        </div>
+        ${a.banReason ? `<div class="appeal-email" style="margin-bottom:8px">Ban reason: ${esc(a.banReason)}</div>` : ''}
+        <div class="appeal-reason">${esc(a.text)}</div>
+        <div class="action-row">
+          <button class="action-btn btn-accept" onclick="setStatus('${a.id}','Accepted','${esc(a.username)}','${esc(a.email)}','${esc(a.type)}')">✅ Accept</button>
+          <button class="action-btn btn-unban" onclick="setStatus('${a.id}','Unbanned','${esc(a.username)}','${esc(a.email)}','${esc(a.type)}')">🔓 Unbanned</button>
+          <button class="action-btn btn-decline" onclick="setStatus('${a.id}','Declined','${esc(a.username)}','${esc(a.email)}','${esc(a.type)}')">❌ Decline</button>
+          <button class="action-btn btn-pending" onclick="setStatus('${a.id}','Pending','${esc(a.username)}','${esc(a.email)}','${esc(a.type)}')">🕐 Pending</button>
+          <button class="action-btn btn-delete" onclick="deleteAppeal('${a.id}')">🗑 Delete</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // ══════════════════════════════════════════════
+  // SET STATUS + EMAIL
+  // ══════════════════════════════════════════════
+  async function setStatus(id, status, username, email, type) {
+    try {
+      await appealsCol.doc(id).update({ status });
+      // Appeals re-render automatically via the real-time listener
+      const msgs = {
+        Accepted: `Hi ${username},\n\nWe have great news — your appeal has been ACCEPTED!\n\nAfter carefully reviewing your case, our moderation team has decided to lift your punishment. You are now free to rejoin and enjoy the game.\n\nWelcome back!\n\nBest regards,\nThe Staff Team`,
+        Unbanned: `Hi ${username},\n\nYou have officially been UNBANNED! 🎉\n\nOur moderation team reviewed your case and lifted your ban. You are now free to rejoin the game. See you in-game! 🎮\n\nBest regards,\nThe Staff Team`,
+        Declined: `Hi ${username},\n\nAfter thoroughly reviewing your case, our moderation team has decided to DENY your appeal.\n\nWe were unable to find sufficient grounds to overturn the punishment. You may resubmit after 10 days.\n\nBest regards,\nThe Staff Team`,
+        Pending: `Hi ${username},\n\nYour appeal is currently PENDING review.\n\nOur team will reach a decision within 3 business days.\n\nBest regards,\nThe Staff Team`
+      };
+      const toastMsgs = { Accepted: '✅ Accepted — emailing ' + email, Unbanned: '🔓 Unbanned — emailing ' + email, Declined: '❌ Declined — emailing ' + email, Pending: '🕐 Pending — emailing ' + email };
+      if (emailjsReady) {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          email, name: username,
+          title: 'Appeal — ' + status.toUpperCase(),
+          status: status.toUpperCase(),
+          message: msgs[status],
+          punishment: type
+        }).then(() => showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok'))
+          .catch(err => { showToast('Status saved but email failed.', 'err'); console.error(err); });
+      } else {
+        showToast('Status saved!', 'ok');
+      }
+    } catch(err) {
+      showToast('Failed to update status.', 'err');
+      console.error(err);
+    }
+  }
+
+  // ── Delete
+  async function deleteAppeal(id) {
+    try {
+      await appealsCol.doc(id).delete();
+      showToast('Appeal deleted.', 'ok');
+    } catch(err) {
+      showToast('Failed to delete.', 'err');
+      console.error(err);
+    }
+  }
+
+  // ══════════════════════════════════════════════
+  // ADMIN LOGIN
+  // ══════════════════════════════════════════════
   function sendCode() {
     const entered = document.getElementById('admin-email').value.trim().toLowerCase();
     const allowed = whitelist.map(e => e.toLowerCase());
@@ -512,18 +674,12 @@
     }
     pendingCode = String(Math.floor(100000 + Math.random() * 900000));
     pendingLoginEmail = entered;
-    btn.disabled = true;
-    btn.textContent = '⏳ Sending...';
-    if (!emailjsReady) {
-      showToast('EmailJS not ready — check connection.', 'err');
-      btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE'; return;
-    }
+    btn.disabled = true; btn.textContent = '⏳ Sending...';
+    if (!emailjsReady) { showToast('EmailJS not ready.', 'err'); btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE'; return; }
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email: STAFF_NOTIFY_EMAIL,
-      name: 'Staff Team',
-      title: 'Admin Login Verification Code',
-      status: 'LOGIN CODE',
-      message: 'Admin login requested by: ' + entered + '\n\nVerification Code: ' + pendingCode + '\n\nShare this code ONLY with the person trying to log in. This code expires in 10 minutes.',
+      email: STAFF_NOTIFY_EMAIL, name: 'Staff Team',
+      title: 'Admin Login Verification Code', status: 'LOGIN CODE',
+      message: 'Admin login requested by: ' + entered + '\n\nVerification Code: ' + pendingCode + '\n\nShare this code ONLY with the person trying to log in. Expires in 10 minutes.',
       punishment: 'N/A'
     }).then(() => {
       infoEl.style.display = 'block';
@@ -533,16 +689,16 @@
       btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
       setTimeout(() => { pendingCode = null; sessionStorage.removeItem('pending_admin_login'); }, 600000);
     }).catch(err => {
-      showToast('Failed to send code. Check EmailJS config.', 'err');
-      console.error(err);
+      showToast('Failed to send code.', 'err');
       btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
     });
   }
+
   function verifyCode() {
     const entered = document.getElementById('admin-code').value.trim();
     const errEl = document.getElementById('code-error');
     errEl.style.display = 'none';
-    if (!pendingCode) { showToast('Code expired. Please request a new one.', 'err'); resetLogin(); return; }
+    if (!pendingCode) { showToast('Code expired. Request a new one.', 'err'); resetLogin(); return; }
     if (entered === pendingCode) {
       pendingCode = null;
       sessionStorage.removeItem('pending_admin_login');
@@ -555,6 +711,7 @@
       setTimeout(() => { errEl.style.display = 'none'; }, 3500);
     }
   }
+
   function resetLogin() {
     pendingCode = null; pendingLoginEmail = null;
     sessionStorage.removeItem('pending_admin_login');
@@ -565,13 +722,16 @@
     document.getElementById('login-info').style.display = 'none';
     document.getElementById('login-error').style.display = 'none';
   }
+
   function adminLogout() {
     clearAdminSession();
+    stopAppealListener();
     document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('admin-login').style.display = 'block';
     resetLogin();
     showToast('Logged out.', 'ok');
   }
+
   // ── Whitelist
   function addWhitelist() {
     const val = document.getElementById('whitelist-input').value.trim().toLowerCase();
@@ -582,11 +742,13 @@
     document.getElementById('whitelist-input').value = '';
     showToast('✅ ' + val + ' added!', 'ok');
   }
+
   function removeWhitelist(email) {
     if (email.toLowerCase() === OWNER_EMAIL) { showToast('Cannot remove the owner!', 'err'); return; }
     whitelist = whitelist.filter(e => e.toLowerCase() !== email.toLowerCase());
     saveWhitelist(); renderWhitelist();
   }
+
   function renderWhitelist() {
     document.getElementById('whitelist-list').innerHTML = whitelist.map(e => `
       <div class="whitelist-tag ${e.toLowerCase()===OWNER_EMAIL?'owner-tag':''}">
@@ -594,99 +756,10 @@
         ${e.toLowerCase()===OWNER_EMAIL ? '<span title="Owner">👑</span>' : `<span class="remove-tag" onclick="removeWhitelist('${esc(e)}')" title="Remove">✕</span>`}
       </div>`).join('');
   }
-  // ── Render Appeals
-  function renderAppeals() {
-    const list = document.getElementById('appeals-list');
-    document.getElementById('appeal-count').textContent = appeals.length;
-    if (appeals.length === 0) {
-      list.innerHTML = '<div class="no-appeals"><div class="icon">📭</div><p>No appeals yet!</p></div>';
-      return;
-    }
-    list.innerHTML = appeals.map(a => `
-      <div class="appeal-item" id="appeal-${a.id}">
-        <div class="appeal-top">
-          <div>
-            <div class="player-name">🎮 ${esc(a.username)}</div>
-            <div class="appeal-email">${esc(a.email)} · ${a.date} · ${esc(a.type)}</div>
-          </div>
-          <span class="status-pill status-${a.status.toLowerCase()}">${a.status}</span>
-        </div>
-        ${a.banReason ? `<div class="appeal-email" style="margin-bottom:8px">Ban reason: ${esc(a.banReason)}</div>` : ''}
-        <div class="appeal-reason">${esc(a.text)}</div>
-        <div class="action-row">
-          <button class="action-btn btn-accept" onclick="setStatus(${a.id},'Accepted')">✅ Accept</button>
-          <button class="action-btn btn-unban" onclick="setStatus(${a.id},'Unbanned')">🔓 Unbanned</button>
-          <button class="action-btn btn-decline" onclick="setStatus(${a.id},'Declined')">❌ Decline</button>
-          <button class="action-btn btn-pending" onclick="setStatus(${a.id},'Pending')">🕐 Pending</button>
-          <button class="action-btn btn-delete" onclick="deleteAppeal(${a.id})">🗑 Delete</button>
-        </div>
-      </div>`).join('');
-  }
-  // ── Set Status + Send Email
-  function setStatus(id, status) {
-    const a = appeals.find(x => x.id === id);
-    if (!a) return;
-    a.status = status;
-    saveAppeals(); renderAppeals();
-    if (EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID' || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-      showToast('Status saved! (Configure EmailJS to enable emails)', 'ok'); return;
-    }
-    const toastMsgs = { Accepted: '✅ Accepted — email sent to ' + a.email, Unbanned: '🔓 Unbanned — email sent to ' + a.email, Declined: '❌ Declined — email sent to ' + a.email, Pending: '🕐 Pending — email sent to ' + a.email };
-    const msgs = {
-      Accepted: `Hi ${a.username},\n\nWe have great news — your appeal has been ACCEPTED!\n\nAfter carefully reviewing your case, our moderation team has decided to lift your punishment. You are now free to rejoin and enjoy the game. Please make sure to read and follow our community rules going forward to avoid any future issues.\n\nWelcome back!\n\nBest regards,\nThe Staff Team`,
-      Unbanned: `Hi ${a.username},\n\nYou have officially been UNBANNED! 🎉\n\nOur moderation team reviewed your case and lifted your ban. You are now free to rejoin the game.\n\nPlease re-read our community guidelines to avoid future issues. See you in-game! 🎮\n\nBest regards,\nThe Staff Team`,
-      Declined: `Hi ${a.username},\n\nAfter thoroughly reviewing your case, our moderation team has decided to DENY your appeal.\n\nWe were unable to find sufficient grounds to overturn the punishment. Our decision is final at this time.\n\nYou may resubmit a new appeal with additional information after 10 days.\n\nBest regards,\nThe Staff Team`,
-      Pending: `Hi ${a.username},\n\nYour appeal is currently PENDING review.\n\nOur team will do their best to reach a decision within 3 business days. Please do not submit duplicate appeals as this may delay the process.\n\nBest regards,\nThe Staff Team`
-    };
-    if (!emailjsReady) { showToast('EmailJS not loaded — check your connection.', 'err'); return; }
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email: a.email,
-      name: a.username,
-      title: 'Appeal — ' + status.toUpperCase(),
-      status: status.toUpperCase(),
-      message: msgs[status],
-      punishment: a.type
-    }).then(() => showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok'))
-      .catch(err => { showToast('Email failed' + (err && err.text ? ': ' + err.text : ''), 'err'); console.error('EmailJS error:', err); });
-  }
-  // ── Clear all cooldowns via shareable reset link
-  function clearAllCooldowns() {
-    const resetTime = Date.now();
-    const base = window.location.href.split('?')[0];
-    const link = base + '?clearcd=' + resetTime;
-    navigator.clipboard.writeText(link).then(() => {
-      showToast('✅ Reset link copied! Share it so players can click it to reapply.', 'ok');
-    }).catch(() => {
-      prompt('Share this link with players to clear their cooldown:', link);
-    });
-  }
-  // ── On page load: check if URL has clearcd param and wipe that player's cooldown
-  function checkResetParam() {
-    const params = new URLSearchParams(window.location.search);
-    const resetTime = parseInt(params.get('clearcd'));
-    if (!resetTime) return;
-    const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
-    let cleared = false;
-    for (const key of Object.keys(data)) {
-      if (data[key] <= resetTime) { delete data[key]; cleared = true; }
-    }
-    if (cleared) {
-      localStorage.setItem('appeal_cooldowns', JSON.stringify(data));
-      const btn = document.getElementById('appeal-submit-btn');
-      if (btn && btn.disabled) { btn.disabled = false; btn.textContent = '🚀 SUBMIT APPEAL'; }
-      showToast('✅ Your cooldown has been cleared — you can reapply!', 'ok');
-    }
-    window.history.replaceState({}, '', window.location.pathname);
-  }
-  // ── Delete
-  function deleteAppeal(id) {
-    appeals = appeals.filter(a => a.id !== id);
-    saveAppeals(); renderAppeals();
-  }
+
   // ── Helpers
-  function saveAppeals() { localStorage.setItem('roblox_appeals', JSON.stringify(appeals)); }
   function saveWhitelist() { localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist)); }
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;'); }
   function showToast(msg, type='ok') {
     const t = document.getElementById('toast');
     t.textContent = msg;
