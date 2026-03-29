@@ -318,6 +318,7 @@
     restorePendingLogin();
     checkAdminSession();
     fetchIP().then(() => checkCooldownOnLoad());
+    checkResetParam();
   });
   // ══════════════════════════════════════════════
   // IP FETCH
@@ -648,10 +649,34 @@
     }).then(() => showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok'))
       .catch(err => { showToast('Email failed' + (err && err.text ? ': ' + err.text : ''), 'err'); console.error('EmailJS error:', err); });
   }
-  // ── Clear all cooldowns
+  // ── Clear all cooldowns via shareable reset link
   function clearAllCooldowns() {
-    localStorage.removeItem('appeal_cooldowns');
-    showToast('✅ All cooldowns cleared — everyone can reapply!', 'ok');
+    const resetTime = Date.now();
+    const base = window.location.href.split('?')[0];
+    const link = base + '?clearcd=' + resetTime;
+    navigator.clipboard.writeText(link).then(() => {
+      showToast('✅ Reset link copied! Share it so players can click it to reapply.', 'ok');
+    }).catch(() => {
+      prompt('Share this link with players to clear their cooldown:', link);
+    });
+  }
+  // ── On page load: check if URL has clearcd param and wipe that player's cooldown
+  function checkResetParam() {
+    const params = new URLSearchParams(window.location.search);
+    const resetTime = parseInt(params.get('clearcd'));
+    if (!resetTime) return;
+    const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
+    let cleared = false;
+    for (const key of Object.keys(data)) {
+      if (data[key] <= resetTime) { delete data[key]; cleared = true; }
+    }
+    if (cleared) {
+      localStorage.setItem('appeal_cooldowns', JSON.stringify(data));
+      const btn = document.getElementById('appeal-submit-btn');
+      if (btn && btn.disabled) { btn.disabled = false; btn.textContent = '🚀 SUBMIT APPEAL'; }
+      showToast('✅ Your cooldown has been cleared — you can reapply!', 'ok');
+    }
+    window.history.replaceState({}, '', window.location.pathname);
   }
   // ── Delete
   function deleteAppeal(id) {
