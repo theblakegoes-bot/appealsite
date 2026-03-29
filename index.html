@@ -342,11 +342,15 @@
     saveWhitelist();
   }
 
-  // ── EmailJS Init ──
+  // ── EmailJS Init (v4 syntax) ──
   let emailjsReady = false;
   window.addEventListener('load', () => {
-    try { emailjs.init(EMAILJS_PUBLIC_KEY); emailjsReady = true; }
-    catch(e) { console.error('EmailJS init failed:', e); }
+    try {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      emailjsReady = true;
+    } catch(e) {
+      console.error('EmailJS init failed:', e);
+    }
   });
 
   // ══════════════════════════════════════════════
