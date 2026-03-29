@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Appeal System</title>
+<title>Steal Time From Others Appeals</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
@@ -185,7 +185,7 @@
 <body>
 <div class="admin-banner" id="admin-banner">🔐 &nbsp; Admin Panel</div>
 <nav>
-  <div class="logo">⚔️ <span>Roblox</span>Appeals</div>
+  <div class="logo">⚔️ <span>Steal Time From Others</span> Appeals</div>
   <div class="nav-tabs">
     <button class="tab-btn active" id="tab-appeal" onclick="showPage('appeal')">Submit Appeal</button>
     <button class="tab-btn" id="tab-admin" onclick="showPage('admin')">Admin Panel</button>
@@ -270,6 +270,7 @@
       <h2>📬 Appeals</h2>
       <div style="display:flex;align-items:center;gap:10px">
         <span class="badge" id="appeal-count">0</span>
+        <button class="logout-btn" style="border-color:var(--teal);color:var(--teal)" onclick="clearAllCooldowns()">🔓 Clear All Cooldowns</button>
         <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
       </div>
     </div>
@@ -646,6 +647,11 @@
       punishment: a.type
     }).then(() => showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok'))
       .catch(err => { showToast('Email failed' + (err && err.text ? ': ' + err.text : ''), 'err'); console.error('EmailJS error:', err); });
+  }
+  // ── Clear all cooldowns
+  function clearAllCooldowns() {
+    localStorage.removeItem('appeal_cooldowns');
+    showToast('✅ All cooldowns cleared — everyone can reapply!', 'ok');
   }
   // ── Delete
   function deleteAppeal(id) {
