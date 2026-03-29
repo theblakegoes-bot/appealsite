@@ -314,14 +314,12 @@
   window.addEventListener('load', () => {
     try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); emailjsReady = true; }
     catch(e) { console.error('EmailJS init failed:', e); }
-    fetchIP().then(() => {
-      checkCooldownOnLoad();
-      checkAdminSession();
-      restorePendingLogin();
-    });
+    restorePendingLogin();
+    checkAdminSession();
+    fetchIP().then(() => checkCooldownOnLoad());
   });
   // ══════════════════════════════════════════════
-  // IP FETCH — used alongside fingerprint
+  // IP FETCH
   // ══════════════════════════════════════════════
   async function fetchIP() {
     try {
@@ -357,7 +355,7 @@
     if (userIP) keys.push('ip_' + userIP.replace(/\./g, '_'));
     return keys;
   }
-  // ── Cooldown (keyed by ALL tracking keys) ──
+  // ── Cooldown
   function getCooldownRemaining() {
     const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
     let maxRemaining = 0;
@@ -391,7 +389,7 @@
     return m + ' minute' + (m !== 1 ? 's' : '');
   }
   // ══════════════════════════════════════════════
-  // ADMIN SESSION — persists 30 days
+  // ADMIN SESSION — 30 days
   // ══════════════════════════════════════════════
   function saveAdminSession(email) {
     localStorage.setItem('admin_session', JSON.stringify({ email: email.toLowerCase(), expires: Date.now() + SESSION_DURATION_MS }));
@@ -399,8 +397,7 @@
   function getAdminSession() {
     try {
       const s = JSON.parse(localStorage.getItem('admin_session') || 'null');
-      if (!s) return null;
-      if (Date.now() > s.expires) { localStorage.removeItem('admin_session'); return null; }
+      if (!s || Date.now() > s.expires) { localStorage.removeItem('admin_session'); return null; }
       return s;
     } catch(e) { return null; }
   }
@@ -418,8 +415,9 @@
     renderWhitelist();
     renderAppeals();
   }
-  // ── Persist pending login code across refresh (sessionStorage) ──
+  // ── Pending login code (refresh fix)
   function restorePendingLogin() {
+    if (document.getElementById('admin-panel').style.display === 'block') return;
     const dataStr = sessionStorage.getItem('pending_admin_login');
     if (!dataStr) return;
     const data = JSON.parse(dataStr);
@@ -433,7 +431,7 @@
     document.getElementById('code-step').style.display = 'block';
     document.getElementById('login-info').style.display = 'block';
   }
-  // ── Navigation ──
+  // ── Navigation
   function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -441,7 +439,7 @@
     document.getElementById('tab-' + page).classList.add('active');
     document.getElementById('admin-banner').classList.toggle('show', page === 'admin');
   }
-  // ── Submit Appeal ──
+  // ── Submit Appeal
   function submitAppeal() {
     const username = document.getElementById('username').value.trim();
     const email = document.getElementById('player-email').value.trim();
@@ -475,13 +473,7 @@
         name: 'Staff Team',
         title: '📬 New Appeal — ' + username,
         status: 'NEW APPEAL',
-        message: 'A new appeal has been submitted!\n\n'
-                  + 'Username: ' + username + '\n'
-                  + 'Email: ' + email + '\n'
-                  + 'Punishment: ' + type
-                  + (banReason ? '\nBan Reason: ' + banReason : '')
-                  + '\n\nAppeal:\n' + text
-                  + '\n\nLog in to the admin panel to review and respond.',
+        message: 'A new appeal has been submitted!\n\nUsername: ' + username + '\nEmail: ' + email + '\nPunishment: ' + type + (banReason ? '\nBan Reason: ' + banReason : '') + '\n\nAppeal:\n' + text + '\n\nLog in to the admin panel to review and respond.',
         punishment: type
       }).catch(err => console.error('Staff notify failed:', err));
     }
@@ -491,7 +483,7 @@
       document.getElementById('punishment-type').value = '';
     }, 5000);
   }
-  // ── Admin Login ──
+  // ── Admin Login
   function sendCode() {
     const entered = document.getElementById('admin-email').value.trim().toLowerCase();
     const allowed = whitelist.map(e => e.toLowerCase());
@@ -524,12 +516,7 @@
       infoEl.style.display = 'block';
       document.getElementById('email-step').style.display = 'none';
       document.getElementById('code-step').style.display = 'block';
-      // persist for refresh
-      sessionStorage.setItem('pending_admin_login', JSON.stringify({
-        email: entered,
-        code: pendingCode,
-        expires: Date.now() + 600000
-      }));
+      sessionStorage.setItem('pending_admin_login', JSON.stringify({ email: entered, code: pendingCode, expires: Date.now() + 600000 }));
       btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
       setTimeout(() => { pendingCode = null; sessionStorage.removeItem('pending_admin_login'); }, 600000);
     }).catch(err => {
@@ -572,7 +559,7 @@
     resetLogin();
     showToast('Logged out.', 'ok');
   }
-  // ── Whitelist ──
+  // ── Whitelist
   function addWhitelist() {
     const val = document.getElementById('whitelist-input').value.trim().toLowerCase();
     if (!val || !val.includes('@')) { showToast('Enter a valid email.', 'err'); return; }
@@ -591,12 +578,10 @@
     document.getElementById('whitelist-list').innerHTML = whitelist.map(e => `
       <div class="whitelist-tag ${e.toLowerCase()===OWNER_EMAIL?'owner-tag':''}">
         ${esc(e)}
-        ${e.toLowerCase()===OWNER_EMAIL
-          ? '<span title="Owner">👑</span>'
-          : `<span class="remove-tag" onclick="removeWhitelist('${esc(e)}')" title="Remove">✕</span>`}
+        ${e.toLowerCase()===OWNER_EMAIL ? '<span title="Owner">👑</span>' : `<span class="remove-tag" onclick="removeWhitelist('${esc(e)}')" title="Remove">✕</span>`}
       </div>`).join('');
   }
-  // ── Render Appeals ──
+  // ── Render Appeals
   function renderAppeals() {
     const list = document.getElementById('appeals-list');
     document.getElementById('appeal-count').textContent = appeals.length;
@@ -624,4 +609,48 @@
         </div>
       </div>`).join('');
   }
-  // ── Set Status + Send Email ─
+  // ── Set Status + Send Email
+  function setStatus(id, status) {
+    const a = appeals.find(x => x.id === id);
+    if (!a) return;
+    a.status = status;
+    saveAppeals(); renderAppeals();
+    if (EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID' || EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+      showToast('Status saved! (Configure EmailJS to enable emails)', 'ok'); return;
+    }
+    const toastMsgs = { Accepted: '✅ Accepted — email sent to ' + a.email, Unbanned: '🔓 Unbanned — email sent to ' + a.email, Declined: '❌ Declined — email sent to ' + a.email, Pending: '🕐 Pending — email sent to ' + a.email };
+    const msgs = {
+      Accepted: `Hi ${a.username},\n\nWe have great news — your appeal has been ACCEPTED!\n\nAfter carefully reviewing your case, our moderation team has decided to lift your punishment. You are now free to rejoin and enjoy the game. Please make sure to read and follow our community rules going forward to avoid any future issues.\n\nWelcome back!\n\nBest regards,\nThe Staff Team`,
+      Unbanned: `Hi ${a.username},\n\nYou have officially been UNBANNED! 🎉\n\nOur moderation team reviewed your case and lifted your ban. You are now free to rejoin the game.\n\nPlease re-read our community guidelines to avoid future issues. See you in-game! 🎮\n\nBest regards,\nThe Staff Team`,
+      Declined: `Hi ${a.username},\n\nAfter thoroughly reviewing your case, our moderation team has decided to DENY your appeal.\n\nWe were unable to find sufficient grounds to overturn the punishment. Our decision is final at this time.\n\nYou may resubmit a new appeal with additional information after 10 days.\n\nBest regards,\nThe Staff Team`,
+      Pending: `Hi ${a.username},\n\nYour appeal is currently PENDING review.\n\nOur team will do their best to reach a decision within 3 business days. Please do not submit duplicate appeals as this may delay the process.\n\nBest regards,\nThe Staff Team`
+    };
+    if (!emailjsReady) { showToast('EmailJS not loaded — check your connection.', 'err'); return; }
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email: a.email,
+      name: a.username,
+      title: 'Appeal — ' + status.toUpperCase(),
+      status: status.toUpperCase(),
+      message: msgs[status],
+      punishment: a.type
+    }).then(() => showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok'))
+      .catch(err => { showToast('Email failed' + (err && err.text ? ': ' + err.text : ''), 'err'); console.error('EmailJS error:', err); });
+  }
+  // ── Delete
+  function deleteAppeal(id) {
+    appeals = appeals.filter(a => a.id !== id);
+    saveAppeals(); renderAppeals();
+  }
+  // ── Helpers
+  function saveAppeals() { localStorage.setItem('roblox_appeals', JSON.stringify(appeals)); }
+  function saveWhitelist() { localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist)); }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function showToast(msg, type='ok') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast toast-' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+</script>
+</body>
+</html>
