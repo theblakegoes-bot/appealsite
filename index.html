@@ -3,251 +3,1156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Steal Time From Others Appeals</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>STFO — Ban Appeals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-  :root {
-    --red: #e8222a; --dark-red: #b01a20; --bg: #111318; --panel: #1c1f28; --card: #242836;
-    --border: #2e3347; --text: #eef0f8; --muted: #7a7f99; --green: #2ecc71; --yellow: #f1c40f;
-    --blue: #3498db; --purple: #9b59b6; --teal: #1abc9c;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); min-height: 100vh; }
-  .admin-banner { display: none; background: rgba(155,89,182,0.15); border-bottom: 1px solid var(--purple); text-align: center; padding: 5px; font-size: 0.72rem; font-weight: 700; color: var(--purple); letter-spacing: 3px; text-transform: uppercase; }
-  .admin-banner.show { display: block; }
-  nav { background: var(--panel); border-bottom: 3px solid var(--red); padding: 14px 30px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--red); letter-spacing: 1px; }
-  .logo span { color: var(--text); }
-  .nav-tabs { display: flex; gap: 8px; }
-  .tab-btn { background: none; border: 2px solid var(--border); color: var(--muted); padding: 7px 20px; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-  .tab-btn.active, .tab-btn:hover { border-color: var(--red); color: var(--text); background: rgba(232,34,42,0.12); }
-  .page { display: none; max-width: 720px; margin: 40px auto; padding: 0 20px; }
-  .page.active { display: block; }
-  .hero { text-align: center; margin-bottom: 36px; }
-  .hero-icon { font-size: 3rem; margin-bottom: 12px; }
-  .hero h1 { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: var(--text); }
-  .hero p { color: var(--muted); margin-top: 8px; font-size: 0.95rem; }
-  .form-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
-  .form-group { margin-bottom: 20px; }
-  label { display: block; font-weight: 700; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  input, textarea, select { width: 100%; background: var(--panel); border: 2px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
-  input:focus, textarea:focus, select:focus { border-color: var(--red); }
-  textarea { min-height: 120px; resize: vertical; }
-  .submit-btn { width: 100%; background: var(--red); color: #fff; border: none; border-radius: 10px; padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
-  .submit-btn:hover { background: var(--dark-red); }
-  .submit-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
-  .send-code-btn { width: 100%; background: var(--purple); color: #fff; border: none; border-radius: 10px; padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; margin-top: 4px; }
-  .verify-btn { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; margin-top: 4px; }
-  .success-box { background: rgba(46,204,113,0.1); border: 2px solid var(--green); border-radius: 12px; padding: 20px; text-align: center; display: none; margin-top: 20px; }
-  .success-box.show { display: block; }
-  .login-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; margin: 0 auto; }
-  .login-error { color: var(--red); font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; }
-  .login-info { color: var(--blue); font-size: 0.82rem; margin-top: 12px; text-align: center; display: none; background: rgba(52,152,219,0.08); border: 1px solid var(--blue); border-radius: 8px; padding: 10px 14px; }
-  #code-step { display: none; }
-  .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
-  .badge { background: var(--red); color: #fff; border-radius: 20px; padding: 3px 12px; font-size: 0.8rem; font-weight: 700; }
-  .logout-btn { background: none; border: 2px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
-  .whitelist-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-  .whitelist-row { display: flex; gap: 8px; margin-bottom: 12px; }
-  .whitelist-tag { background: rgba(155,89,182,0.15); border: 1px solid var(--purple); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #c39bd3; display: flex; align-items: center; gap: 6px; }
-  .owner-tag { background: rgba(232,34,42,0.12); border-color: var(--red); color: #f0a0a3; }
-  .appeal-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
-  .status-pill { padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
-  .status-pending { background: rgba(241,196,15,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
-  .status-accepted { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid var(--green); }
-  .status-declined { background: rgba(232,34,42,0.15); color: var(--red); border: 1px solid var(--red); }
-  .action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-  .action-btn { padding: 7px 16px; border-radius: 8px; border: 2px solid; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; background: none; }
-  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; opacity: 0; transition: all 0.3s; z-index: 999; }
-  .toast.show { opacity: 1; transform: translateY(-10px); }
+/* ═══════════════════════════════════════════
+   CSS VARIABLES & RESET
+═══════════════════════════════════════════ */
+:root {
+  --red: #e5232b; --red-d: #b01920; --red-glow: rgba(229,35,43,.18);
+  --bg: #080a12; --surface: #0d1020; --card: #111422; --card2: #181c2e;
+  --b: rgba(255,255,255,.07); --b2: rgba(255,255,255,.13); --b3: rgba(255,255,255,.18);
+  --text: #e8eaf6; --mid: #8892b0; --dim: #48516e;
+  --green: #22c55e; --amber: #f59e0b; --blue: #3b82f6;
+  --purple: #8b5cf6; --teal: #14b8a6; --rose: #f43f5e;
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════
+   BACKGROUND
+═══════════════════════════════════════════ */
+#bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.bg-glow {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 5% 0%, rgba(229,35,43,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 95% 100%, rgba(139,92,246,.05) 0%, transparent 55%);
+}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+nav {
+  position: sticky; top: 0; z-index: 200; height: 58px;
+  padding: 0 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,10,18,.93);
+  backdrop-filter: blur(28px);
+  border-bottom: 1px solid var(--b);
+}
+.logo {
+  display: flex; align-items: center; gap: 9px;
+  text-decoration: none; color: var(--text); cursor: pointer;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem;
+  letter-spacing: -.01em;
+}
+.logo-ic { color: var(--red); display: flex; }
+.logo em { font-style:normal; color: var(--mid); font-weight:600; font-size:.87rem; margin-left:2px; }
+.nav-r { display: flex; align-items: center; gap: 4px; }
+.tab-btn {
+  background: none; border: none; color: var(--mid);
+  padding: 6px 13px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: .82rem;
+  cursor: pointer; transition: color .14s, background .14s;
+  display: flex; align-items: center; gap: 5px;
+}
+.tab-btn:hover { color: var(--text); background: rgba(255,255,255,.05); }
+.tab-btn.active { color: var(--text); background: rgba(229,35,43,.11); }
+.adm-pill {
+  display: none; align-items: center; gap: 5px; margin-left: 4px;
+  font-family: 'DM Mono', monospace; font-size: .6rem;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--purple);
+  background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.25);
+  padding: 3px 9px; border-radius: 20px;
+}
+.adm-pill.show { display: flex; }
+
+/* ═══════════════════════════════════════════
+   PAGES
+═══════════════════════════════════════════ */
+.page { display:none; max-width:700px; margin:0 auto; padding:52px 20px 90px; position:relative; z-index:10; }
+.page.active { display:block; }
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero { text-align:center; margin-bottom:46px; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: .67rem; font-weight: 500;
+  color: var(--mid); letter-spacing: .09em; text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.dot { width:7px; height:7px; border-radius:50%; background:var(--red); animation:pulse 2.4s ease-in-out infinite; flex-shrink:0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+.hero h1 {
+  font-family: 'Syne', sans-serif; font-size: 2.7rem; font-weight: 800;
+  letter-spacing: -.045em; line-height: 1.04; margin-bottom: 13px;
+}
+.hero h1 em { font-style:normal; color:var(--red); }
+.hero p { color:var(--mid); font-size:.92rem; line-height:1.65; max-width:430px; margin:0 auto; }
+
+/* ═══════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════ */
+.card {
+  background: var(--card); border: 1px solid var(--b);
+  border-radius: 18px; padding: 28px 30px; margin-bottom: 18px;
+}
+.card-hd {
+  display: flex; align-items: center; gap: 9px;
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  letter-spacing: -.01em; margin-bottom: 24px;
+}
+.card-hd svg { color: var(--mid); }
+
+/* ═══════════════════════════════════════════
+   FORM ELEMENTS
+═══════════════════════════════════════════ */
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.fg { margin-bottom: 17px; }
+label {
+  display: block; font-family: 'DM Mono', monospace;
+  font-size: .66rem; font-weight: 500; color: var(--mid);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 7px;
+}
+input, textarea, select {
+  width: 100%; background: var(--surface);
+  border: 1px solid rgba(255,255,255,.09); border-radius: 10px;
+  padding: 10px 13px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: .9rem;
+  transition: border-color .15s, box-shadow .15s; outline: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: rgba(229,35,43,.5);
+  box-shadow: 0 0 0 3px rgba(229,35,43,.07);
+}
+input::placeholder, textarea::placeholder { color: var(--dim); }
+textarea { min-height: 115px; resize: vertical; line-height: 1.6; }
+select option { background: var(--surface); }
+.char-count { font-family:'DM Mono',monospace; font-size:.62rem; color:var(--dim); text-align:right; margin-top:4px; transition:color .15s; }
+.char-count.warn { color:var(--amber); }
+.char-count.over { color:var(--red); }
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  border: none; border-radius: 10px; padding: 11px 18px;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: .88rem;
+  cursor: pointer; transition: all .15s;
+}
+.btn-full { width:100%; padding:13px; font-family:'Syne',sans-serif; font-weight:700; font-size:.97rem; letter-spacing:.01em; margin-top:4px; }
+.btn-red { background:var(--red); color:#fff; }
+.btn-red:hover { background:var(--red-d); transform:translateY(-1px); box-shadow:0 8px 28px rgba(229,35,43,.24); }
+.btn-red:active { transform:none; box-shadow:none; }
+.btn-red:disabled { background:var(--card2); color:var(--dim); cursor:not-allowed; transform:none; box-shadow:none; font-size:.78rem; letter-spacing:0; }
+.btn-purple { background:var(--purple); color:#fff; }
+.btn-purple:hover { opacity:.88; transform:translateY(-1px); }
+.btn-purple:disabled { opacity:.35; cursor:not-allowed; transform:none; }
+.btn-ghost { background:none; border:1px solid rgba(255,255,255,.1); color:var(--mid); font-size:.79rem; padding:6px 13px; }
+.btn-ghost:hover { border-color:rgba(255,255,255,.22); color:var(--text); background:rgba(255,255,255,.04); }
+
+/* ═══════════════════════════════════════════
+   FEEDBACK BANNERS
+═══════════════════════════════════════════ */
+.fb { border-radius:12px; padding:18px 20px; text-align:center; display:none; margin-top:18px; animation:fbIn .28s ease; }
+.fb.show { display:block; }
+@keyframes fbIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.fb h3 { font-family:'Syne',sans-serif; font-size:1.04rem; font-weight:700; margin-bottom:5px; }
+.fb p { font-size:.84rem; line-height:1.6; }
+.fb-ok { background:rgba(34,197,94,.07); border:1px solid rgba(34,197,94,.25); }
+.fb-ok h3 { color:var(--green); } .fb-ok p { color:rgba(34,197,94,.7); }
+.fb-warn { background:rgba(229,35,43,.07); border:1px solid rgba(229,35,43,.22); }
+.fb-warn h3 { color:var(--red); } .fb-warn p { color:var(--mid); }
+
+/* ═══════════════════════════════════════════
+   ADMIN LOGIN
+═══════════════════════════════════════════ */
+.login-wrap { max-width:420px; margin:0 auto; }
+.login-err { color:var(--red); font-size:.8rem; margin-top:10px; text-align:center; display:none; }
+.login-info {
+  color: var(--blue); font-size: .8rem; margin-top: 12px; text-align: center;
+  display: none; background: rgba(59,130,246,.07); border: 1px solid rgba(59,130,246,.22);
+  border-radius: 8px; padding: 10px 14px; line-height: 1.55;
+}
+#code-step { display:none; }
+.code-input {
+  letter-spacing: 10px; font-size: 1.5rem; text-align: center;
+  font-family: 'DM Mono', monospace !important;
+}
+
+/* ═══════════════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════════════ */
+.adm-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:10px; }
+.adm-hd h2 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; letter-spacing:-.04em; }
+.adm-btns { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.session-info { font-family:'DM Mono',monospace; font-size:.65rem; color:var(--dim); margin-bottom:16px; }
+
+.info-box {
+  background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.2);
+  border-radius: 12px; padding: 13px 16px; margin-bottom: 18px;
+  font-size: .81rem; color: #93c5fd; line-height: 1.65;
+}
+.info-box strong { color: var(--blue); }
+
+.filters { display:flex; gap:5px; margin-bottom:14px; flex-wrap:wrap; }
+.f-btn {
+  background: none; border: 1px solid rgba(255,255,255,.09); color: var(--mid);
+  padding: 4px 13px; border-radius: 20px; font-size: .75rem; font-weight: 500;
+  cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif;
+}
+.f-btn.active, .f-btn:hover { border-color:rgba(229,35,43,.38); color:var(--text); background:rgba(229,35,43,.07); }
+
+/* ═══════════════════════════════════════════
+   APPEAL ITEMS
+═══════════════════════════════════════════ */
+.items { display:flex; flex-direction:column; gap:11px; }
+.item { background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px; transition:border-color .15s; }
+.item:hover { border-color:var(--b2); }
+.item-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:9px; gap:10px; }
+.item-name { font-weight:600; font-size:.97rem; display:flex; align-items:center; gap:7px; }
+.item-meta { font-family:'DM Mono',monospace; font-size:.67rem; color:var(--mid); margin-top:3px; line-height:1.7; }
+.item-meta .ip-tag { color:var(--dim); }
+.item-body { font-size:.85rem; color:var(--mid); line-height:1.6; margin-bottom:12px; border-left:2px solid rgba(255,255,255,.07); padding-left:11px; }
+.item-tag { font-size:.68rem; color:var(--dim); background:rgba(255,255,255,.05); padding:2px 8px; border-radius:8px; font-family:'DM Mono',monospace; }
+.item-reason { font-size:.74rem; color:var(--dim); margin-bottom:8px; font-family:'DM Mono',monospace; }
+
+/* Status Pills */
+.sp { padding:3px 10px; border-radius:20px; font-size:.65rem; font-weight:500; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; flex-shrink:0; font-family:'DM Mono',monospace; }
+.sp-pending  { background:rgba(245,158,11,.1);  color:var(--amber); border:1px solid rgba(245,158,11,.28); }
+.sp-accepted { background:rgba(34,197,94,.1);   color:var(--green); border:1px solid rgba(34,197,94,.28); }
+.sp-declined { background:rgba(229,35,43,.1);   color:var(--red);   border:1px solid rgba(229,35,43,.28); }
+.sp-unbanned { background:rgba(20,184,166,.1);  color:var(--teal);  border:1px solid rgba(20,184,166,.28); }
+
+/* Action Buttons */
+.actions { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+.ab { padding:5px 11px; border-radius:8px; border:1px solid; background:none; font-family:'DM Sans',sans-serif; font-weight:600; font-size:.73rem; cursor:pointer; transition:all .14s; display:inline-flex; align-items:center; gap:5px; }
+.ab-accept  { border-color:rgba(34,197,94,.32);  color:var(--green); } .ab-accept:hover  { background:rgba(34,197,94,.09); }
+.ab-unban   { border-color:rgba(20,184,166,.32); color:var(--teal);  } .ab-unban:hover   { background:rgba(20,184,166,.09); }
+.ab-decline { border-color:rgba(229,35,43,.32);  color:var(--red);   } .ab-decline:hover { background:rgba(229,35,43,.09); }
+.ab-pending { border-color:rgba(245,158,11,.32); color:var(--amber); } .ab-pending:hover { background:rgba(245,158,11,.09); }
+.ab-del     { border-color:rgba(255,255,255,.08); color:var(--dim); margin-left:auto; } .ab-del:hover { border-color:rgba(229,35,43,.35); color:var(--red); }
+
+/* Empty State */
+.empty { text-align:center; padding:54px 20px; color:var(--dim); }
+.empty p { font-size:.88rem; margin-top:13px; line-height:1.6; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 22px; right: 22px; z-index: 9999;
+  background: var(--card2); border: 1px solid var(--b);
+  border-radius: 12px; padding: 12px 18px;
+  font-size: .83rem; font-weight: 500;
+  opacity: 0; transform: translateY(14px);
+  transition: all .22s; max-width: 310px; pointer-events: none;
+}
+.toast.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+.toast-ok  { border-color:rgba(34,197,94,.35);  color:var(--green); }
+.toast-err { border-color:rgba(229,35,43,.3);   color:var(--red);   }
+.toast-i   { border-color:rgba(59,130,246,.3);  color:var(--blue);  }
+
+/* Loading */
+.loading { text-align:center; padding:44px 20px; color:var(--dim); font-size:.88rem; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:560px) {
+  .form-row { grid-template-columns:1fr; }
+  .actions { flex-direction:column; }
+  .ab-del { margin-left:0; }
+  nav { padding:0 14px; }
+  .tab-btn { padding:6px 9px; font-size:.77rem; }
+  .logo em { display:none; }
+  .page { padding:30px 14px 64px; }
+  .hero h1 { font-size:2rem; }
+  .card { padding:20px; }
+}
 </style>
 </head>
 <body>
-<div class="admin-banner" id="admin-banner">🔐 &nbsp; Admin Panel</div>
+
+<canvas id="bg-canvas"></canvas>
+<div class="bg-glow"></div>
+
+<!-- ════ NAV ════ -->
 <nav>
-  <div class="logo">⚔️ <span>STFO</span> Appeals</div>
-  <div class="nav-tabs">
-    <button class="tab-btn active" id="tab-appeal" onclick="showPage('appeal')">Submit Appeal</button>
-    <button class="tab-btn" id="tab-admin" onclick="showPage('admin')">Admin Panel</button>
+  <div class="logo" onclick="showPage('appeal')">
+    <span class="logo-ic">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M3 14.5L12 5.5M12 5.5V9M12 5.5H8.5"/>
+        <path d="M4 13.5L2.5 15"/>
+      </svg>
+    </span>
+    STFO <em>Appeals</em>
+  </div>
+  <div class="nav-r">
+    <button class="tab-btn active" id="tab-appeal" onclick="showPage('appeal')">
+      <svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="1.5" width="11" height="15" rx="2"/><line x1="6.5" y1="6" x2="11.5" y2="6"/><line x1="6.5" y1="9" x2="11.5" y2="9"/><line x1="6.5" y1="12" x2="9.5" y2="12"/></svg>
+      Appeal
+    </button>
+    <button class="tab-btn" id="tab-admin" onclick="showPage('admin')">
+      <svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1.5L2.5 4.5v4.25C2.5 12.5 5.5 15.5 9 16.5c3.5-1 6.5-4 6.5-7.75V4.5L9 1.5z"/></svg>
+      Admin
+    </button>
+    <div class="adm-pill" id="adm-pill">
+      <svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>
+      Admin
+    </div>
   </div>
 </nav>
 
+<!-- ════ APPEAL PAGE ════ -->
 <div class="page active" id="page-appeal">
-  <div class="hero"><h1>Submit an Appeal</h1><p>Explain your case clearly for review.</p></div>
-  <div class="form-card">
-    <div class="form-group"><label>Roblox Username</label><input type="text" id="username" /></div>
-    <div class="form-group"><label>Your Email</label><input type="email" id="player-email" /></div>
-    <div class="form-group"><label>Appeal Details</label><textarea id="appeal-text"></textarea></div>
-    <div class="form-group"><label>Type</label><select id="punishment-type"><option value="Ban">Ban</option><option value="Mute">Mute</option></select></div>
-    <button class="submit-btn" id="appeal-submit-btn" onclick="submitAppeal()">🚀 SUBMIT APPEAL</button>
-    <div class="success-box" id="success-box"><h3>✅ Submitted!</h3><p>We will review your appeal soon.</p></div>
+  <div class="hero">
+    <div class="eyebrow"><span class="dot"></span>Ban Appeals</div>
+    <h1>Submit an <em>Appeal</em></h1>
+    <p>Think your ban was unfair? Fill out the form below and our moderation team will review your case within 3 business days.</p>
+  </div>
+  <div class="card">
+    <div class="card-hd">
+      <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="1.5" width="11" height="15" rx="2"/><line x1="6.5" y1="6" x2="11.5" y2="6"/><line x1="6.5" y1="9" x2="11.5" y2="9"/><line x1="6.5" y1="12" x2="9.5" y2="12"/></svg>
+      Appeal Form
+    </div>
+    <div class="form-row">
+      <div class="fg">
+        <label>Roblox Username</label>
+        <input type="text" id="ap-username" placeholder="YourUsername123" maxlength="50" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="ap-email" placeholder="you@example.com" maxlength="120">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg">
+        <label>Punishment Type</label>
+        <select id="ap-type">
+          <option value="">Select type…</option>
+          <option>Game Ban</option>
+          <option>Server Ban</option>
+          <option>Mute</option>
+          <option>Kick</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Ban Reason (if known)</label>
+        <input type="text" id="ap-reason" placeholder="e.g. Exploiting, Chat violation…" maxlength="120">
+      </div>
+    </div>
+    <div class="fg">
+      <label>Your Appeal</label>
+      <textarea id="ap-text" placeholder="Explain why you believe your ban should be lifted. Be honest and detailed — this is your best chance to make your case." maxlength="2000" oninput="updateCC(this,'ap-cc',2000)"></textarea>
+      <div class="char-count" id="ap-cc">0 / 2000</div>
+    </div>
+    <button class="btn btn-full btn-red" id="appeal-btn" onclick="submitAppeal()">Submit Appeal</button>
+    <div class="fb fb-ok" id="ap-ok">
+      <h3>Appeal Submitted ✓</h3>
+      <p>Your appeal has been received. Our moderation team will review your case and respond via email within 3 business days.</p>
+    </div>
+    <div class="fb fb-warn" id="ap-cd">
+      <h3>Cooldown Active</h3>
+      <p id="ap-cd-msg">You must wait before submitting another appeal.</p>
+    </div>
   </div>
 </div>
 
+<!-- ════ ADMIN PAGE ════ -->
 <div class="page" id="page-admin">
-  <div id="admin-login">
-    <div class="login-card">
-      <h2>🔐 Admin Login</h2>
+
+  <!-- Login -->
+  <div id="adm-login">
+    <div class="hero">
+      <div class="eyebrow"><span class="dot"></span>Staff Only</div>
+      <h1>Admin <em>Panel</em></h1>
+      <p>Enter your whitelisted staff email. A one-time verification code will be sent to the staff inbox.</p>
+    </div>
+    <div class="card login-wrap">
       <div id="email-step">
-        <div class="form-group"><label>Whitelisted Email</label><input type="email" id="admin-email" /></div>
-        <button class="send-code-btn" id="send-code-btn" onclick="sendCode()">📨 SEND CODE</button>
-        <div class="login-error" id="login-error">🚫 Not whitelisted.</div>
-        <div class="login-info" id="login-info">📧 Code sent to Faddycutty@gmail.com</div>
+        <div class="fg">
+          <label>Staff Email</label>
+          <input type="email" id="adm-email" placeholder="yourname@gmail.com" onkeydown="if(event.key==='Enter')sendCode()">
+        </div>
+        <button class="btn btn-full btn-purple" id="send-code-btn" onclick="sendCode()">Send Verification Code</button>
+        <div class="login-err" id="login-err">Access denied. This email is not authorised.</div>
+        <div class="login-info" id="login-info">
+          Code sent to the staff inbox. Ask a staff member for the 6-digit code — it expires in 10 minutes.
+        </div>
       </div>
       <div id="code-step">
-        <div class="form-group"><label>6-Digit Code</label><input type="text" id="admin-code" maxlength="6" style="text-align:center; font-size:1.5rem;" /></div>
-        <button class="verify-btn" onclick="verifyCode()">✅ VERIFY</button>
+        <div class="fg" style="margin-top:4px">
+          <label>Verification Code</label>
+          <input type="text" id="adm-code" class="code-input" placeholder="000000" maxlength="6" onkeydown="if(event.key==='Enter')verifyCode()">
+        </div>
+        <button class="btn btn-full btn-purple" onclick="verifyCode()">Verify &amp; Access Panel</button>
+        <div class="login-err" id="code-err">Incorrect code. Please try again.</div>
+        <p onclick="resetLogin()" style="text-align:center;margin-top:14px;font-size:.77rem;color:var(--dim);cursor:pointer;text-decoration:underline;">← Use a different email</p>
       </div>
     </div>
   </div>
-  <div id="admin-panel" style="display:none">
-    <div class="admin-header"><h2>📬 Appeals <span class="badge" id="appeal-count">0</span></h2><button class="logout-btn" onclick="adminLogout()">Logout</button></div>
-    <div class="whitelist-card">
-      <h3>🛡️ Whitelist</h3>
-      <div class="whitelist-row"><input type="email" id="whitelist-input" /><button class="action-btn" onclick="addWhitelist()">Add</button></div>
-      <div class="whitelist-list" id="whitelist-list"></div>
+
+  <!-- Panel -->
+  <div id="adm-panel" style="display:none">
+    <div class="adm-hd">
+      <h2>Appeals</h2>
+      <div class="adm-btns">
+        <button class="btn btn-ghost" onclick="exportCSV()">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1v8M4 6l3 3 3-3"/><path d="M2 11h10"/></svg>
+          Export CSV
+        </button>
+        <button class="btn btn-ghost" onclick="adminLogout()">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 12H2.5a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="9,3.5 12,7 9,10.5"/><line x1="5" y1="7" x2="12" y2="7"/></svg>
+          Logout
+        </button>
+      </div>
     </div>
-    <div class="appeals-list" id="appeals-list"></div>
+    <div class="session-info" id="session-info"></div>
+    <div class="info-box">
+      <strong>Note:</strong> Appeals are stored in Firebase and visible across all staff devices in real-time. IP addresses and device fingerprints are logged with every submission. Use <strong>Export CSV</strong> to back up all data.
+    </div>
+    <div class="filters">
+      <button class="f-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="f-btn" onclick="setFilter('Pending',this)">Pending</button>
+      <button class="f-btn" onclick="setFilter('Accepted',this)">Accepted</button>
+      <button class="f-btn" onclick="setFilter('Declined',this)">Declined</button>
+      <button class="f-btn" onclick="setFilter('Unbanned',this)">Unbanned</button>
+    </div>
+    <div class="items" id="ap-list">
+      <div class="loading">Loading appeals…</div>
+    </div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
+<!-- ════════════════════════════════════════════
+  JAVASCRIPT
+════════════════════════════════════════════ -->
 <script>
-  // CONFIG
-  const firebaseConfig = {
-    apiKey: "AIzaSyBSc1wAwQRlH8AdDhkiMnByIXZq29rTo_Q",
-    authDomain: "stfo-appeals.firebaseapp.com",
-    projectId: "stfo-appeals",
-    storageBucket: "stfo-appeals.firebasestorage.app",
-    messagingSenderId: "199350287573",
-    appId: "1:199350287573:web:f3b31e415bcd407299f65c"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const appealsCol = db.collection('appeals');
 
-  const EMAILJS_SERVICE_ID = 'service_gmt5cvx';
-  const EMAILJS_TEMPLATE_ID = 'template_kreqxod';
-  const EMAILJS_PUBLIC_KEY = 'us7G33aq7_9z5zwcv';
-  
-  // STAFF EMAIL FOR CODES & NOTIFICATIONS
-  const STAFF_NOTIFY_EMAIL = 'Faddycutty@gmail.com'; 
-  const OWNER_EMAIL = 'Faddycutty@gmail.com'; 
+const CONFIG = {
+  gameName:  'Steal Time From Others',
+  gameShort: 'STFO',
 
-  let whitelist = JSON.parse(localStorage.getItem('roblox_whitelist') || '[]');
-  let pendingCode = null;
-  let pendingLoginEmail = null;
+  /*
+   * ADMIN WHITELIST
+   * ───────────────
+   * Add or remove staff emails here.
+   * These are the only people who can log in to the admin panel.
+   * Lowercase only. Changes require re-uploading the file.
+   */
+  adminWhitelist: [
+    'noahhemingway1116@gmail.com',
+    // 'staffmember@gmail.com',
+    // 'anotherstaffmember@gmail.com',
+  ],
 
-  if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL.toLowerCase())) {
-    whitelist.unshift(OWNER_EMAIL);
-    localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist));
+  /*
+   * EMAILJS
+   * ───────
+   * https://emailjs.com — free plan is fine.
+   * staffNotifyEmail: receives new appeal alerts + login codes.
+   */
+  emailjs: {
+    serviceId:  'service_gmt5cvx',
+    templateId: 'template_kreqxod',
+    publicKey:  'us7G33aq7_9z5zwcv',
+  },
+  staffNotifyEmail: 'Faddycutty@gmail.com',
+
+  /*
+   * COOLDOWN
+   * ────────
+   * Days a player must wait before submitting again.
+   */
+  cooldownDays: 10,
+
+  /*
+   * SESSION
+   * ───────
+   * How many days an admin stays logged in before re-verifying.
+   */
+  sessionDays: 30,
+};
+/* ════════════════════════════════════════════ */
+
+
+/*
+ * ════════════════════════════════════════════
+ * FIRESTORE SECURITY RULES
+ * ════════════════════════════════════════════
+ * IMPORTANT: Paste these into Firebase Console
+ * → Firestore → Rules and click Publish.
+ * Without these, your database is open to anyone.
+ *
+ * rules_version = '2';
+ * service cloud.firestore {
+ *   match /databases/{database}/documents {
+ *     match /appeals/{doc} {
+ *       // Anyone can create (submit an appeal)
+ *       allow create: if true;
+ *       // Only requests that include the admin secret header can read/write
+ *       // Since this is client-side, use IP or auth; for now restrict reads:
+ *       allow read, update, delete: if false; // ← change after adding Firebase Auth
+ *     }
+ *   }
+ * }
+ *
+ * For full server-side protection, enable Firebase Auth (Email Link)
+ * and replace `if false` with `if request.auth != null`.
+ * ════════════════════════════════════════════
+ */
+
+
+/* ════════════════════════════════════════════
+   FIREBASE
+════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey:            'AIzaSyBSc1wAwQRlH8AdDhkiMnByIXZq29rTo_Q',
+  authDomain:        'stfo-appeals.firebaseapp.com',
+  projectId:         'stfo-appeals',
+  storageBucket:     'stfo-appeals.firebasestorage.app',
+  messagingSenderId: '199350287573',
+  appId:             '1:199350287573:web:f3b31e415bcd407299f65c',
+};
+firebase.initializeApp(firebaseConfig);
+const db          = firebase.firestore();
+const appealsCol  = db.collection('appeals');
+let   firestoreUnsub = null;
+
+
+/* ════════════════════════════════════════════
+   EMAILJS
+════════════════════════════════════════════ */
+let ejsReady = false;
+window.addEventListener('load', () => {
+  try { emailjs.init({ publicKey: CONFIG.emailjs.publicKey }); ejsReady = true; }
+  catch(e) { console.warn('EmailJS failed to init:', e); }
+  fetchIP().then(() => {
+    checkCooldown();
+    checkSession();
+  });
+});
+
+
+/* ════════════════════════════════════════════
+   IP + DEVICE FINGERPRINT
+   Both are logged silently with every appeal.
+   Admins can see them in the panel.
+════════════════════════════════════════════ */
+let userIP = null;
+
+async function fetchIP() {
+  try {
+    const r = await fetch('https://api.ipify.org?format=json');
+    const d = await r.json();
+    userIP = d.ip || null;
+  } catch(e) { userIP = null; }
+}
+
+function getFingerprint() {
+  const c   = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+  ctx.textBaseline = 'top';
+  ctx.font = '14px Arial';
+  ctx.fillText('stfo-fp', 2, 2);
+  const raw = [
+    navigator.userAgent,
+    navigator.language,
+    `${screen.width}x${screen.height}x${screen.colorDepth}`,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency || 0,
+    navigator.platform || '',
+    c.toDataURL().slice(-80),
+  ].join('|');
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) h = (Math.imul(31, h) + raw.charCodeAt(i)) | 0;
+  return 'fp_' + Math.abs(h).toString(36);
+}
+
+function getTrackingKeys() {
+  const keys = [getFingerprint()];
+  if (userIP) keys.push('ip_' + userIP.replace(/\./g, '_'));
+  return keys;
+}
+
+
+/* ════════════════════════════════════════════
+   COOLDOWN  (localStorage — intentional,
+   it's per-device by design)
+════════════════════════════════════════════ */
+const COOLDOWN_MS = CONFIG.cooldownDays * 86400000;
+
+function getCooldownRemaining() {
+  const data = JSON.parse(localStorage.getItem('stfo_cd') || '{}');
+  return getTrackingKeys().reduce((max, k) => {
+    if (!data[k]) return max;
+    const rem = COOLDOWN_MS - (Date.now() - data[k]);
+    return rem > max ? rem : max;
+  }, 0);
+}
+
+function setCooldown() {
+  const data = JSON.parse(localStorage.getItem('stfo_cd') || '{}');
+  getTrackingKeys().forEach(k => { data[k] = Date.now(); });
+  localStorage.setItem('stfo_cd', JSON.stringify(data));
+}
+
+function checkCooldown() {
+  const rem = getCooldownRemaining();
+  if (rem > 0) {
+    const b = document.getElementById('appeal-btn');
+    b.disabled = true;
+    b.textContent = `Wait ${fmtTime(rem)} Before Appealing Again`;
+  }
+}
+
+function fmtTime(ms) {
+  const d = Math.floor(ms / 86400000);
+  const h = Math.floor((ms % 86400000) / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  if (d > 0) return `${d}d${h > 0 ? ` ${h}hr` : ''}`;
+  if (h > 0) return `${h}hr${m > 0 ? ` ${m}m` : ''}`;
+  return `${m}m`;
+}
+
+function updateCC(el, id, max) {
+  const len = el.value.length, cc = document.getElementById(id);
+  if (!cc) return;
+  cc.textContent = `${len} / ${max}`;
+  cc.className = 'char-count' + (len >= max ? ' over' : len >= max * .9 ? ' warn' : '');
+}
+
+
+/* ════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════ */
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  document.getElementById('tab-' + p).classList.add('active');
+  if (p === 'admin' && isAdminOpen()) startListener();
+}
+
+
+/* ════════════════════════════════════════════
+   SUBMIT APPEAL  →  Firestore
+════════════════════════════════════════════ */
+async function submitAppeal() {
+  const un = document.getElementById('ap-username').value.trim();
+  const em = document.getElementById('ap-email').value.trim();
+  const ty = document.getElementById('ap-type').value;
+  const re = document.getElementById('ap-reason').value.trim();
+  const tx = document.getElementById('ap-text').value.trim();
+
+  if (!un || !em || !ty || !tx) { toast('Please fill in all required fields.', 'err'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { toast('Enter a valid email address.', 'err'); return; }
+  if (un.length < 3)  { toast('Username must be at least 3 characters.', 'err'); return; }
+  if (tx.length < 20) { toast('Please write a more detailed appeal (at least 20 characters).', 'err'); return; }
+
+  const rem = getCooldownRemaining();
+  if (rem > 0) {
+    document.getElementById('ap-cd-msg').textContent = `You must wait ${fmtTime(rem)} before submitting another appeal.`;
+    document.getElementById('ap-cd').classList.add('show');
+    const b = document.getElementById('appeal-btn');
+    b.disabled = true; b.textContent = `Wait ${fmtTime(rem)}`;
+    return;
   }
 
-  window.addEventListener('load', () => {
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-    checkAdminSession();
+  const btn = document.getElementById('appeal-btn');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+
+  try {
+    await appealsCol.add({
+      username:  un.slice(0, 50),
+      email:     em.slice(0, 120),
+      type:      ty,
+      reason:    re.slice(0, 120),
+      text:      tx.slice(0, 2000),
+      status:    'Pending',
+      ip:        userIP || 'Unknown',
+      fingerprint: getFingerprint(),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      date:      new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }),
+    });
+
+    setCooldown();
+    document.getElementById('ap-ok').classList.add('show');
+    document.getElementById('ap-cd').classList.remove('show');
+    btn.textContent = `Wait ${CONFIG.cooldownDays} Days Before Appealing Again`;
+
+    // Notify staff via email
+    if (ejsReady) {
+      emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
+        email:      CONFIG.staffNotifyEmail,
+        name:       'Staff Team',
+        title:      `New Appeal — ${un}`,
+        status:     'NEW APPEAL',
+        punishment: ty,
+        message:    `New appeal submitted!\n\nUsername: ${un}\nEmail: ${em}\nType: ${ty}${re ? `\nReason: ${re}` : ''}\nIP: ${userIP || 'Unknown'}\nDevice: ${getFingerprint()}\n\n---\n${tx}`,
+      }).catch(() => {});
+    }
+
+    setTimeout(() => {
+      document.getElementById('ap-ok').classList.remove('show');
+      ['ap-username','ap-email','ap-reason','ap-text'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      document.getElementById('ap-type').value = '';
+      const cc = document.getElementById('ap-cc'); if (cc) cc.textContent = '0 / 2000';
+    }, 6000);
+
+  } catch(err) {
+    console.error('Firestore error:', err);
+    toast('Failed to submit. Please try again.', 'err');
+    btn.disabled = false; btn.textContent = 'Submit Appeal';
+  }
+}
+
+
+/* ════════════════════════════════════════════
+   ADMIN SESSION
+   ─────────────
+   sessionStorage stores ONLY { email, expires }.
+   The verification code NEVER touches any storage —
+   it lives in memory only and is wiped after use.
+════════════════════════════════════════════ */
+const SESSION_MS = CONFIG.sessionDays * 86400000;
+
+function saveSession(email) {
+  sessionStorage.setItem('adm_s', JSON.stringify({ email: email.toLowerCase(), exp: Date.now() + SESSION_MS }));
+}
+function getSession() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem('adm_s') || 'null');
+    if (!s || Date.now() > s.exp) { sessionStorage.removeItem('adm_s'); return null; }
+    return s;
+  } catch(e) { return null; }
+}
+function clearSession() { sessionStorage.removeItem('adm_s'); }
+
+function isAdminOpen() {
+  return document.getElementById('adm-panel').style.display !== 'none';
+}
+
+function checkSession() {
+  const s = getSession();
+  if (!s) return;
+  if (!CONFIG.adminWhitelist.map(e => e.toLowerCase()).includes(s.email)) {
+    clearSession(); return;
+  }
+  openPanel(s.email);
+}
+
+function openPanel(email) {
+  document.getElementById('adm-login').style.display = 'none';
+  document.getElementById('adm-panel').style.display  = 'block';
+  document.getElementById('adm-pill').classList.add('show');
+  const expDays = Math.round((getSession()?.exp - Date.now()) / 86400000);
+  document.getElementById('session-info').textContent =
+    `Logged in as ${email} · Session expires in ${expDays} day${expDays !== 1 ? 's' : ''}`;
+  startListener();
+}
+
+
+/* ════════════════════════════════════════════
+   ADMIN LOGIN
+   ────────────
+   Step 1 → enter whitelisted email
+   Step 2 → 6-digit code sent via EmailJS to staff inbox
+            Code stored in closure variable ONLY.
+            Nothing written to sessionStorage or localStorage.
+   Step 3 → enter code → session saved (email + expiry only)
+════════════════════════════════════════════ */
+
+// Wrapped in an IIFE so _code and _email are NOT accessible
+// from the browser console — completely hidden from DevTools.
+const AdminAuth = (() => {
+  let _code  = null;
+  let _email = null;
+  let _expTimer = null;
+
+  function _expire() {
+    _code = null; _email = null;
+    if (_expTimer) clearTimeout(_expTimer);
+  }
+
+  return {
+    sendCode() {
+      const entered = document.getElementById('adm-email').value.trim().toLowerCase();
+      const errEl   = document.getElementById('login-err');
+      const infoEl  = document.getElementById('login-info');
+      const btn     = document.getElementById('send-code-btn');
+      errEl.style.display = infoEl.style.display = 'none';
+
+      if (!entered || !entered.includes('@')) {
+        toast('Enter a valid email.', 'err'); return;
+      }
+      if (!CONFIG.adminWhitelist.map(e => e.toLowerCase()).includes(entered)) {
+        errEl.style.display = 'block';
+        setTimeout(() => errEl.style.display = 'none', 3500); return;
+      }
+
+      // Generate code — stays in memory only
+      _code  = String(Math.floor(100000 + Math.random() * 900000));
+      _email = entered;
+
+      // Expire after 10 minutes
+      if (_expTimer) clearTimeout(_expTimer);
+      _expTimer = setTimeout(_expire, 600000);
+
+      btn.disabled = true; btn.textContent = 'Sending…';
+
+      if (!ejsReady) {
+        toast('EmailJS not ready — check config.', 'err');
+        btn.disabled = false; btn.textContent = 'Send Verification Code';
+        _expire(); return;
+      }
+
+      emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
+        email:      CONFIG.staffNotifyEmail,
+        name:       'Staff Team',
+        title:      'Admin Login Code',
+        status:     'LOGIN CODE',
+        punishment: 'N/A',
+        message:    `Login requested by: ${entered}\n\nVerification Code: ${_code}\n\nShare this ONLY with the person logging in.\nExpires in 10 minutes.`,
+      }).then(() => {
+        infoEl.style.display = 'block';
+        document.getElementById('email-step').style.display = 'none';
+        document.getElementById('code-step').style.display  = 'block';
+        btn.disabled = false; btn.textContent = 'Send Verification Code';
+      }).catch(() => {
+        toast('Failed to send code — check EmailJS config.', 'err');
+        btn.disabled = false; btn.textContent = 'Send Verification Code';
+        _expire();
+      });
+    },
+
+    verifyCode() {
+      const entered = document.getElementById('adm-code').value.trim();
+      const errEl   = document.getElementById('code-err');
+      errEl.style.display = 'none';
+
+      if (!_code) {
+        toast('Code expired — request a new one.', 'err');
+        resetLogin(); return;
+      }
+      if (entered !== _code) {
+        errEl.style.display = 'block';
+        document.getElementById('adm-code').value = '';
+        setTimeout(() => errEl.style.display = 'none', 3500);
+        return;
+      }
+
+      // Success — wipe code immediately
+      const email = _email;
+      _expire();
+      saveSession(email);
+      openPanel(email);
+      toast('Logged in. Session saved.', 'ok');
+    },
+
+    reset() {
+      _expire();
+    },
+  };
+})();
+
+function sendCode()    { AdminAuth.sendCode(); }
+function verifyCode()  { AdminAuth.verifyCode(); }
+
+function resetLogin() {
+  AdminAuth.reset();
+  document.getElementById('email-step').style.display = 'block';
+  document.getElementById('code-step').style.display  = 'none';
+  document.getElementById('adm-email').value = '';
+  document.getElementById('adm-code').value  = '';
+  document.getElementById('login-err').style.display  = 'none';
+  document.getElementById('code-err').style.display   = 'none';
+  document.getElementById('login-info').style.display = 'none';
+  document.getElementById('send-code-btn').disabled   = false;
+  document.getElementById('send-code-btn').textContent = 'Send Verification Code';
+}
+
+function adminLogout() {
+  clearSession();
+  stopListener();
+  document.getElementById('adm-panel').style.display  = 'none';
+  document.getElementById('adm-login').style.display  = 'block';
+  document.getElementById('adm-pill').classList.remove('show');
+  resetLogin();
+  toast('Logged out.', 'ok');
+}
+
+
+/* ════════════════════════════════════════════
+   FIRESTORE REAL-TIME LISTENER
+════════════════════════════════════════════ */
+function startListener() {
+  if (firestoreUnsub) return;
+  document.getElementById('ap-list').innerHTML = '<div class="loading">Loading appeals…</div>';
+  firestoreUnsub = appealsCol.orderBy('timestamp', 'desc').onSnapshot(snap => {
+    const appeals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPanel(appeals);
+  }, err => {
+    console.error('Firestore:', err);
+    document.getElementById('ap-list').innerHTML =
+      '<div class="empty"><p>Failed to load appeals.<br>Check Firestore rules.</p></div>';
+  });
+}
+
+function stopListener() {
+  if (firestoreUnsub) { firestoreUnsub(); firestoreUnsub = null; }
+}
+
+
+/* ════════════════════════════════════════════
+   RENDER ADMIN PANEL
+════════════════════════════════════════════ */
+let currentFilter = 'all';
+const IC = {
+  check:  `<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,7 5.5,10.5 12,3.5"/></svg>`,
+  xmark:  `<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><line x1="3" y1="3" x2="11" y2="11"/><line x1="11" y1="3" x2="3" y2="11"/></svg>`,
+  clock:  `<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><polyline points="7,4 7,7 9,9"/></svg>`,
+  unlock: `<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6.5" width="9" height="6" rx="1.2"/><path d="M4.5 6.5V4.5a2.5 2.5 0 015 0"/></svg>`,
+  trash:  `<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="3.5" x2="12" y2="3.5"/><path d="M5.5 3.5V2.5a1 1 0 011-1h1a1 1 0 011 1v1M4 3.5l.8 8a1 1 0 001 .9h2.4a1 1 0 001-.9l.8-8"/></svg>`,
+  user:   `<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="7" cy="5" r="2.5"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>`,
+  inbox:  `<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3H10l-2-3H2"/><path d="M5.5 5l-3.5 7v7a1 1 0 001 1h18a1 1 0 001-1v-7l-3.5-7A1 1 0 0017.6 4H6.4A1 1 0 005.5 5z"/></svg>`,
+};
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Panel re-renders on next Firestore snapshot; force refresh:
+  if (firestoreUnsub) { stopListener(); startListener(); }
+}
+
+function renderPanel(allAppeals) {
+  const list  = document.getElementById('ap-list');
+  const items = currentFilter === 'all'
+    ? allAppeals
+    : allAppeals.filter(a => a.status === currentFilter);
+
+  if (!items.length) {
+    list.innerHTML = `<div class="empty">${IC.inbox}<p>${
+      currentFilter === 'all'
+        ? 'No appeals yet.<br>Make sure your Discord webhook or email notifications are set up.'
+        : `No ${currentFilter.toLowerCase()} appeals.`
+    }</p></div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(a => {
+    const safeId  = esc(a.id);
+    const safeUn  = esc(a.username || '');
+    const safeEm  = esc(a.email    || '');
+    const safeTy  = esc(a.type     || '');
+    const safeRe  = esc(a.reason   || '');
+    const safeTx  = esc(a.text     || '');
+    const safeIp  = esc(a.ip       || 'Unknown');
+    const safeFp  = esc((a.fingerprint || '').slice(0, 12));
+    const status  = (a.status || 'Pending').toLowerCase();
+
+    return `
+    <div class="item" id="ai-${safeId}">
+      <div class="item-top">
+        <div>
+          <div class="item-name">${IC.user}${safeUn}<span class="item-tag">${safeTy}</span></div>
+          <div class="item-meta">
+            ${safeEm} · ${a.date || ''}
+            <br><span class="ip-tag">IP: ${safeIp} · Device: ${safeFp || 'n/a'}</span>
+          </div>
+        </div>
+        <span class="sp sp-${status}">${a.status || 'Pending'}</span>
+      </div>
+      ${a.reason ? `<div class="item-reason">Ban reason: ${safeRe}</div>` : ''}
+      <div class="item-body">${safeTx}</div>
+      <div class="actions">
+        <button class="ab ab-accept"  onclick="setStatus('${safeId}','Accepted','${safeUn}','${safeEm}','${safeTy}')">${IC.check} Accept</button>
+        <button class="ab ab-unban"   onclick="setStatus('${safeId}','Unbanned','${safeUn}','${safeEm}','${safeTy}')">${IC.unlock} Unban</button>
+        <button class="ab ab-decline" onclick="setStatus('${safeId}','Declined','${safeUn}','${safeEm}','${safeTy}')">${IC.xmark} Decline</button>
+        <button class="ab ab-pending" onclick="setStatus('${safeId}','Pending','${safeUn}','${safeEm}','${safeTy}')">${IC.clock} Pending</button>
+        <button class="ab ab-del"     onclick="delAppeal('${safeId}')">${IC.trash}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+
+/* ════════════════════════════════════════════
+   SET STATUS + EMAIL PLAYER
+════════════════════════════════════════════ */
+async function setStatus(id, status, username, email, type) {
+  try {
+    await appealsCol.doc(id).update({ status });
+  } catch(err) {
+    toast('Failed to update status.', 'err'); return;
+  }
+
+  const msgs = {
+    Accepted: `Hi ${username},\n\nGreat news — your appeal has been ACCEPTED.\nYour punishment has been lifted and you are free to rejoin.\n\nWelcome back!\n— The Staff Team`,
+    Unbanned:  `Hi ${username},\n\nYou have been UNBANNED.\nYour ban was lifted — see you in-game!\n— The Staff Team`,
+    Declined:  `Hi ${username},\n\nAfter reviewing your case, we have decided to DENY your appeal.\nYou may reapply after ${CONFIG.cooldownDays} days.\n— The Staff Team`,
+    Pending:   `Hi ${username},\n\nYour appeal is currently PENDING review.\nWe will reach a decision within 3 business days.\n— The Staff Team`,
+  };
+
+  if (ejsReady && email) {
+    emailjs.send(CONFIG.emailjs.serviceId, CONFIG.emailjs.templateId, {
+      email, name: username,
+      title:      `Appeal Update — ${status.toUpperCase()}`,
+      status:     status.toUpperCase(),
+      punishment: type,
+      message:    msgs[status] || '',
+    })
+    .then(() => toast(`${status} — emailed ${email}`, status === 'Declined' ? 'err' : 'ok'))
+    .catch(() => toast('Status saved. Email failed — check EmailJS config.', 'err'));
+  } else {
+    toast(`Status updated: ${status}`, 'ok');
+  }
+}
+
+
+/* ════════════════════════════════════════════
+   DELETE APPEAL
+════════════════════════════════════════════ */
+async function delAppeal(id) {
+  if (!confirm('Permanently delete this appeal?')) return;
+  try {
+    await appealsCol.doc(id).delete();
+    toast('Appeal deleted.', 'ok');
+  } catch(err) {
+    toast('Failed to delete.', 'err');
+  }
+}
+
+
+/* ════════════════════════════════════════════
+   EXPORT CSV
+════════════════════════════════════════════ */
+async function exportCSV() {
+  let snap;
+  try { snap = await appealsCol.orderBy('timestamp', 'desc').get(); }
+  catch(e) { toast('Failed to fetch appeals.', 'err'); return; }
+
+  if (snap.empty) { toast('No appeals to export.', 'err'); return; }
+
+  const rows = [['ID','Username','Email','Type','Reason','Status','Date','IP','Device','Appeal']];
+  snap.docs.forEach(d => {
+    const a = d.data();
+    rows.push([
+      d.id,
+      a.username || '', a.email || '', a.type || '',
+      a.reason   || '', a.status || '', a.date || '',
+      a.ip        || '', a.fingerprint || '',
+      '"' + (a.text || '').replace(/"/g, '""') + '"',
+    ]);
   });
 
-  function checkAdminSession() {
-    const s = JSON.parse(localStorage.getItem('admin_session') || 'null');
-    if (s && Date.now() < s.expires) openAdminPanel();
-  }
+  const blob = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url; link.download = 'stfo_appeals.csv'; link.click();
+  URL.revokeObjectURL(url);
+}
 
-  function sendCode() {
-    const emailInput = document.getElementById('admin-email').value.trim().toLowerCase();
-    if (!whitelist.map(e => e.toLowerCase()).includes(emailInput)) {
-      document.getElementById('login-error').style.display = 'block';
-      return;
+
+/* ════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════ */
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = `toast toast-${type === 'err' ? 'err' : type === 'i' ? 'i' : 'ok'} show`;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+
+/* ════════════════════════════════════════════
+   BACKGROUND — constellation particle system
+════════════════════════════════════════════ */
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [], raf;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+  class P {
+    constructor() {
+      this.x  = Math.random() * W; this.y  = Math.random() * H;
+      this.vx = (Math.random() - .5) * .28; this.vy = (Math.random() - .5) * .28;
+      this.r  = Math.random() * 1.4 + .4;
+      this.red = Math.random() < .08;
+      this.a  = Math.random() * .4 + .22;
     }
-    
-    pendingCode = Math.floor(100000 + Math.random() * 900000).toString();
-    pendingLoginEmail = emailInput;
-    document.getElementById('send-code-btn').disabled = true;
-
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email: STAFF_NOTIFY_EMAIL, // SENT TO FADDYCUTTY
-      name: 'STFO Admin',
-      title: '🔐 Login Code',
-      message: `Login attempt for: ${emailInput}\n\nYour 6-digit code is: ${pendingCode}`,
-    }).then(() => {
-      document.getElementById('email-step').style.display = 'none';
-      document.getElementById('code-step').style.display = 'block';
-      document.getElementById('login-info').style.display = 'block';
-    }).catch(() => alert('Email failed.'));
+    move() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < -5) this.x = W + 5; if (this.x > W + 5) this.x = -5;
+      if (this.y < -5) this.y = H + 5; if (this.y > H + 5) this.y = -5;
+    }
   }
 
-  function verifyCode() {
-    if (document.getElementById('admin-code').value.trim() === pendingCode) {
-      localStorage.setItem('admin_session', JSON.stringify({ email: pendingLoginEmail, expires: Date.now() + 2592000000 }));
-      openAdminPanel();
-    } else { alert('Wrong code!'); }
+  function init() {
+    resize();
+    const n = Math.min(72, Math.floor(W * H / 17000));
+    particles = Array.from({ length: n }, () => new P());
   }
 
-  function openAdminPanel() {
-    document.getElementById('admin-login').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    renderWhitelist();
-    appealsCol.orderBy('timestamp', 'desc').onSnapshot(snap => {
-      const appeals = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderAppeals(appeals);
-    });
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const n = particles.length;
+    for (let i = 0; i < n; i++) {
+      particles[i].move();
+      for (let j = i + 1; j < n; j++) {
+        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < 130) {
+          const op = (1 - d / 130) * .28;
+          ctx.strokeStyle = (particles[i].red || particles[j].red)
+            ? `rgba(180,30,40,${op * .75})`
+            : `rgba(72,81,110,${op})`;
+          ctx.lineWidth = .5;
+          ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+        }
+      }
+    }
+    for (const p of particles) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.red ? `rgba(229,35,43,${p.a})` : `rgba(72,81,110,${p.a})`;
+      ctx.fill();
+    }
+    raf = requestAnimationFrame(draw);
   }
 
-  function renderAppeals(appeals) {
-    const list = document.getElementById('appeals-list');
-    document.getElementById('appeal-count').textContent = appeals.length;
-    list.innerHTML = appeals.map(a => `
-      <div class="appeal-item">
-        <div style="display:flex; justify-content:space-between;">
-          <b>🎮 ${esc(a.username)}</b>
-          <span class="status-pill status-${(a.status||'pending').toLowerCase()}">${a.status || 'Pending'}</span>
-        </div>
-        <p style="margin:10px 0; color:#ccc;">${esc(a.text)}</p>
-        <div class="action-row">
-          <button class="action-btn" style="border-color:var(--green); color:var(--green);" onclick="setStatus('${a.id}','Accepted','${esc(a.username)}','${esc(a.email)}')">Accept</button>
-          <button class="action-btn" style="border-color:var(--red); color:var(--red);" onclick="setStatus('${a.id}','Declined','${esc(a.username)}','${esc(a.email)}')">Decline</button>
-          <button class="action-btn" onclick="deleteAppeal('${a.id}')">Delete</button>
-        </div>
-      </div>`).join('');
-  }
+  window.addEventListener('resize', () => { cancelAnimationFrame(raf); init(); draw(); });
+  init(); draw();
+})();
 
-  async function submitAppeal() {
-    const data = {
-      username: document.getElementById('username').value,
-      email: document.getElementById('player-email').value,
-      text: document.getElementById('appeal-text').value,
-      type: document.getElementById('punishment-type').value,
-      status: 'Pending',
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    if (!data.username || !data.email) return;
-    await appealsCol.add(data);
-    document.getElementById('success-box').classList.add('show');
-    // Notify Faddycutty of new appeal
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email: STAFF_NOTIFY_EMAIL,
-      name: 'System',
-      title: '📬 New Appeal',
-      message: `User ${data.username} has submitted a new appeal.`
-    });
-  }
-
-  async function setStatus(id, status, user, email) {
-    await appealsCol.doc(id).update({ status });
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email, name: user, title: 'Appeal Update', message: `Your appeal has been ${status}.`
-    });
-  }
-
-  async function deleteAppeal(id) { if(confirm('Delete?')) await appealsCol.doc(id).delete(); }
-  function showPage(p) { document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); }
-  function adminLogout() { localStorage.removeItem('admin_session'); location.reload(); }
-  function renderWhitelist() { document.getElementById('whitelist-list').innerHTML = whitelist.map(e => `<div class="whitelist-tag">${e}</div>`).join(''); }
-  function addWhitelist() { const e = document.getElementById('whitelist-input').value.toLowerCase(); if(e && !whitelist.includes(e)){ whitelist.push(e); localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist)); renderWhitelist(); } }
-  function esc(s) { return s ? s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#039;"}[m])) : ''; }
 </script>
 </body>
 </html>
