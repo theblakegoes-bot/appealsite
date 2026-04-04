@@ -10,51 +10,19 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root {
-    --red: #e8222a;
-    --dark-red: #b01a20;
-    --bg: #111318;
-    --panel: #1c1f28;
-    --card: #242836;
-    --border: #2e3347;
-    --text: #eef0f8;
-    --muted: #7a7f99;
-    --green: #2ecc71;
-    --yellow: #f1c40f;
-    --blue: #3498db;
-    --purple: #9b59b6;
-    --teal: #1abc9c;
+    --red: #e8222a; --dark-red: #b01a20; --bg: #111318; --panel: #1c1f28; --card: #242836;
+    --border: #2e3347; --text: #eef0f8; --muted: #7a7f99; --green: #2ecc71; --yellow: #f1c40f;
+    --blue: #3498db; --purple: #9b59b6; --teal: #1abc9c;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); min-height: 100vh; }
-  .admin-banner {
-    display: none;
-    background: rgba(155,89,182,0.15);
-    border-bottom: 1px solid var(--purple);
-    text-align: center;
-    padding: 5px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--purple);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-  }
+  .admin-banner { display: none; background: rgba(155,89,182,0.15); border-bottom: 1px solid var(--purple); text-align: center; padding: 5px; font-size: 0.72rem; font-weight: 700; color: var(--purple); letter-spacing: 3px; text-transform: uppercase; }
   .admin-banner.show { display: block; }
-  nav {
-    background: var(--panel);
-    border-bottom: 3px solid var(--red);
-    padding: 14px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  nav { background: var(--panel); border-bottom: 3px solid var(--red); padding: 14px 30px; display: flex; align-items: center; justify-content: space-between; }
   .logo { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--red); letter-spacing: 1px; }
   .logo span { color: var(--text); }
   .nav-tabs { display: flex; gap: 8px; }
-  .tab-btn {
-    background: none; border: 2px solid var(--border); color: var(--muted);
-    padding: 7px 20px; border-radius: 8px; font-family: 'Nunito', sans-serif;
-    font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
-  }
+  .tab-btn { background: none; border: 2px solid var(--border); color: var(--muted); padding: 7px 20px; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
   .tab-btn.active, .tab-btn:hover { border-color: var(--red); color: var(--text); background: rgba(232,34,42,0.12); }
   .page { display: none; max-width: 720px; margin: 40px auto; padding: 0 20px; }
   .page.active { display: block; }
@@ -65,126 +33,42 @@
   .form-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
   .form-group { margin-bottom: 20px; }
   label { display: block; font-weight: 700; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  input, textarea, select {
-    width: 100%; background: var(--panel); border: 2px solid var(--border); border-radius: 10px;
-    padding: 12px 14px; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.95rem; transition: border-color 0.2s; outline: none;
-  }
+  input, textarea, select { width: 100%; background: var(--panel); border: 2px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
   input:focus, textarea:focus, select:focus { border-color: var(--red); }
   textarea { min-height: 120px; resize: vertical; }
-  select option { background: var(--panel); }
-  .submit-btn {
-    width: 100%; background: var(--red); color: #fff; border: none; border-radius: 10px;
-    padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
-    cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 4px;
-  }
-  .submit-btn:hover { background: var(--dark-red); transform: translateY(-1px); }
-  .submit-btn:active { transform: translateY(0); }
-  .submit-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; transform: none; font-size: 0.82rem; letter-spacing: 0.3px; padding: 16px 14px; }
-  .send-code-btn {
-    width: 100%; background: var(--purple); color: #fff; border: none; border-radius: 10px;
-    padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
-    cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 4px;
-  }
-  .send-code-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-  .send-code-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  .verify-btn {
-    width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 10px;
-    padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; letter-spacing: 1px;
-    cursor: pointer; transition: opacity 0.2s, transform 0.1s; margin-top: 4px;
-  }
-  .verify-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-  .success-box {
-    background: rgba(46,204,113,0.1); border: 2px solid var(--green); border-radius: 12px;
-    padding: 20px; text-align: center; display: none; margin-top: 20px;
-  }
+  .submit-btn { width: 100%; background: var(--red); color: #fff; border: none; border-radius: 10px; padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+  .submit-btn:hover { background: var(--dark-red); }
+  .submit-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+  .send-code-btn { width: 100%; background: var(--purple); color: #fff; border: none; border-radius: 10px; padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; margin-top: 4px; }
+  .verify-btn { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 14px; font-family: 'Fredoka One', cursive; font-size: 1.1rem; cursor: pointer; margin-top: 4px; }
+  .success-box { background: rgba(46,204,113,0.1); border: 2px solid var(--green); border-radius: 12px; padding: 20px; text-align: center; display: none; margin-top: 20px; }
   .success-box.show { display: block; }
-  .success-box h3 { color: var(--green); font-family: 'Fredoka One', cursive; font-size: 1.3rem; }
-  .success-box p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
-  .cooldown-box {
-    background: rgba(232,34,42,0.08); border: 2px solid var(--red); border-radius: 12px;
-    padding: 20px; text-align: center; display: none; margin-top: 20px;
-  }
-  .cooldown-box.show { display: block; }
-  .cooldown-box h3 { color: var(--red); font-family: 'Fredoka One', cursive; font-size: 1.2rem; }
-  .cooldown-box p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
   .login-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; margin: 0 auto; }
-  .login-card h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; margin-bottom: 6px; text-align: center; }
-  .login-subtitle { text-align: center; color: var(--muted); font-size: 0.8rem; margin-bottom: 24px; line-height: 1.5; }
   .login-error { color: var(--red); font-size: 0.85rem; margin-top: 10px; text-align: center; display: none; }
-  .login-info {
-    color: var(--blue); font-size: 0.82rem; margin-top: 12px; text-align: center;
-    display: none; background: rgba(52,152,219,0.08); border: 1px solid var(--blue);
-    border-radius: 8px; padding: 10px 14px; line-height: 1.5;
-  }
+  .login-info { color: var(--blue); font-size: 0.82rem; margin-top: 12px; text-align: center; display: none; background: rgba(52,152,219,0.08); border: 1px solid var(--blue); border-radius: 8px; padding: 10px 14px; }
   #code-step { display: none; }
   .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
-  .admin-header h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; }
   .badge { background: var(--red); color: #fff; border-radius: 20px; padding: 3px 12px; font-size: 0.8rem; font-weight: 700; }
-  .logout-btn {
-    background: none; border: 2px solid var(--border); color: var(--muted);
-    padding: 6px 14px; border-radius: 8px; font-family: 'Nunito', sans-serif;
-    font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
-  }
-  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+  .logout-btn { background: none; border: 2px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 8px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
   .whitelist-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-  .whitelist-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.1rem; margin-bottom: 14px; color: var(--purple); }
   .whitelist-row { display: flex; gap: 8px; margin-bottom: 12px; }
-  .whitelist-row input { margin-bottom: 0; }
-  .add-btn {
-    background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 0 18px;
-    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
-  }
-  .add-btn:hover { opacity: 0.85; }
-  .whitelist-list { display: flex; flex-wrap: wrap; gap: 8px; }
-  .whitelist-tag {
-    background: rgba(155,89,182,0.15); border: 1px solid var(--purple); border-radius: 20px;
-    padding: 4px 12px; font-size: 0.8rem; color: #c39bd3; display: flex; align-items: center; gap: 6px;
-  }
-  .remove-tag { cursor: pointer; color: var(--muted); font-size: 1rem; line-height: 1; }
-  .remove-tag:hover { color: var(--red); }
+  .whitelist-tag { background: rgba(155,89,182,0.15); border: 1px solid var(--purple); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; color: #c39bd3; display: flex; align-items: center; gap: 6px; }
   .owner-tag { background: rgba(232,34,42,0.12); border-color: var(--red); color: #f0a0a3; }
-  .appeals-list { display: flex; flex-direction: column; gap: 14px; }
-  .appeal-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
-  .appeal-item:hover { border-color: var(--red); }
-  .appeal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .player-name { font-weight: 800; font-size: 1.05rem; }
-  .appeal-email { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-  .status-pill { padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+  .appeal-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+  .status-pill { padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
   .status-pending { background: rgba(241,196,15,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
   .status-accepted { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid var(--green); }
   .status-declined { background: rgba(232,34,42,0.15); color: var(--red); border: 1px solid var(--red); }
-  .status-unbanned { background: rgba(26,188,156,0.15); color: var(--teal); border: 1px solid var(--teal); }
-  .appeal-reason { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; line-height: 1.5; border-left: 3px solid var(--border); padding-left: 12px; }
-  .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .action-btn { padding: 7px 16px; border-radius: 8px; border: 2px solid; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; background: none; }
-  .btn-accept { border-color: var(--green); color: var(--green); }
-  .btn-accept:hover { background: rgba(46,204,113,0.15); }
-  .btn-unban { border-color: var(--teal); color: var(--teal); }
-  .btn-unban:hover { background: rgba(26,188,156,0.15); }
-  .btn-decline { border-color: var(--red); color: var(--red); }
-  .btn-decline:hover { background: rgba(232,34,42,0.15); }
-  .btn-pending { border-color: var(--yellow); color: var(--yellow); }
-  .btn-pending:hover { background: rgba(241,196,15,0.15); }
-  .btn-delete { border-color: var(--border); color: var(--muted); margin-left: auto; }
-  .btn-delete:hover { border-color: #555; color: var(--text); }
-  .no-appeals { text-align: center; padding: 60px 20px; color: var(--muted); }
-  .no-appeals .icon { font-size: 3rem; margin-bottom: 12px; }
-  .loading-box { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.9rem; }
-  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; font-size: 0.9rem; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 999; max-width: 320px; }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.toast-ok { border-color: var(--green); color: var(--green); }
-  .toast.toast-err { border-color: var(--red); color: var(--red); }
-  @media(max-width:520px){
-    .form-card, .login-card { padding: 20px; }
-    .action-row { flex-direction: column; }
-    .btn-delete { margin-left: 0; }
-  }
+  .action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .action-btn { padding: 7px 16px; border-radius: 8px; border: 2px solid; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.8rem; cursor: pointer; background: none; }
+  .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; opacity: 0; transition: all 0.3s; z-index: 999; }
+  .toast.show { opacity: 1; transform: translateY(-10px); }
 </style>
 </head>
 <body>
 <div class="admin-banner" id="admin-banner">🔐 &nbsp; Admin Panel</div>
 <nav>
-  <div class="logo">⚔️ <span>Steal Time From Others</span> Appeals</div>
+  <div class="logo">⚔️ <span>STFO</span> Appeals</div>
   <div class="nav-tabs">
     <button class="tab-btn active" id="tab-appeal" onclick="showPage('appeal')">Submit Appeal</button>
     <button class="tab-btn" id="tab-admin" onclick="showPage('admin')">Admin Panel</button>
@@ -192,48 +76,14 @@
 </nav>
 
 <div class="page active" id="page-appeal">
-  <div class="hero">
-    <div class="hero-icon">📋</div>
-    <h1>Submit an Appeal</h1>
-    <p>Were you banned unfairly? Fill out the form below and we'll review your case.</p>
-  </div>
+  <div class="hero"><h1>Submit an Appeal</h1><p>Explain your case clearly for review.</p></div>
   <div class="form-card">
-    <div class="form-group">
-      <label>Roblox Username</label>
-      <input type="text" id="username" placeholder="YourUsername123" />
-    </div>
-    <div class="form-group">
-      <label>Your Email Address</label>
-      <input type="email" id="player-email" placeholder="you@example.com" />
-    </div>
-    <div class="form-group">
-      <label>Ban Reason (if known)</label>
-      <input type="text" id="ban-reason" placeholder="e.g. Exploiting, Chat violation..." />
-    </div>
-    <div class="form-group">
-      <label>Your Appeal</label>
-      <textarea id="appeal-text" placeholder="Explain why you think your ban should be lifted. Be honest and detailed."></textarea>
-    </div>
-    <div class="form-group">
-      <label>Punishment Type</label>
-      <select id="punishment-type">
-        <option value="">Select type...</option>
-        <option value="Game Ban">Game Ban</option>
-        <option value="Server Ban">Server Ban</option>
-        <option value="Mute">Mute</option>
-        <option value="Kick">Kick</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
+    <div class="form-group"><label>Roblox Username</label><input type="text" id="username" /></div>
+    <div class="form-group"><label>Your Email</label><input type="email" id="player-email" /></div>
+    <div class="form-group"><label>Appeal Details</label><textarea id="appeal-text"></textarea></div>
+    <div class="form-group"><label>Type</label><select id="punishment-type"><option value="Ban">Ban</option><option value="Mute">Mute</option></select></div>
     <button class="submit-btn" id="appeal-submit-btn" onclick="submitAppeal()">🚀 SUBMIT APPEAL</button>
-    <div class="success-box" id="success-box">
-      <h3>✅ Appeal Submitted!</h3>
-      <p>We've received your appeal. You'll receive an email update once a decision has been made.</p>
-    </div>
-    <div class="cooldown-box" id="cooldown-box">
-      <h3>⏳ Cooldown Active</h3>
-      <p id="cooldown-msg">You must wait 10 days before submitting another appeal.</p>
-    </div>
+    <div class="success-box" id="success-box"><h3>✅ Submitted!</h3><p>We will review your appeal soon.</p></div>
   </div>
 </div>
 
@@ -241,57 +91,32 @@
   <div id="admin-login">
     <div class="login-card">
       <h2>🔐 Admin Login</h2>
-      <p class="login-subtitle">Enter your whitelisted email. A verification code will be sent to the staff account.</p>
       <div id="email-step">
-        <div class="form-group">
-          <label>Your Whitelisted Email</label>
-          <input type="email" id="admin-email" placeholder="yourname@gmail.com" onkeydown="if(event.key==='Enter')sendCode()" />
-        </div>
-        <button class="send-code-btn" id="send-code-btn" onclick="sendCode()">📨 SEND VERIFICATION CODE</button>
-        <div class="login-error" id="login-error">🚫 Access denied. This email is not whitelisted.</div>
-        <div class="login-info" id="login-info">📧 A code has been sent! Ask a staff member for the 6-digit code.</div>
+        <div class="form-group"><label>Whitelisted Email</label><input type="email" id="admin-email" /></div>
+        <button class="send-code-btn" id="send-code-btn" onclick="sendCode()">📨 SEND CODE</button>
+        <div class="login-error" id="login-error">🚫 Not whitelisted.</div>
+        <div class="login-info" id="login-info">📧 Code sent to Faddycutty@gmail.com</div>
       </div>
       <div id="code-step">
-        <div class="form-group" style="margin-top:4px">
-          <label>Verification Code</label>
-          <input type="text" id="admin-code" placeholder="000000" maxlength="6"
-            onkeydown="if(event.key==='Enter')verifyCode()"
-            style="letter-spacing:8px;font-size:1.4rem;text-align:center;font-family:'Fredoka One',cursive" />
-        </div>
-        <button class="verify-btn" onclick="verifyCode()">✅ VERIFY &amp; ACCESS PANEL</button>
-        <div class="login-error" id="code-error">🚫 Incorrect code. Please try again.</div>
-        <p onclick="resetLogin()" style="text-align:center;margin-top:14px;font-size:0.78rem;color:var(--muted);cursor:pointer;text-decoration:underline">← Use a different email</p>
+        <div class="form-group"><label>6-Digit Code</label><input type="text" id="admin-code" maxlength="6" style="text-align:center; font-size:1.5rem;" /></div>
+        <button class="verify-btn" onclick="verifyCode()">✅ VERIFY</button>
       </div>
     </div>
   </div>
   <div id="admin-panel" style="display:none">
-    <div class="admin-header">
-      <h2>📬 Appeals</h2>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="badge" id="appeal-count">0</span>
-        <button class="logout-btn" style="border-color:var(--teal);color:var(--teal)" onclick="clearAllCooldowns()">🔓 Clear Cooldowns</button>
-        <button class="logout-btn" onclick="adminLogout()">🚪 Logout</button>
-      </div>
-    </div>
+    <div class="admin-header"><h2>📬 Appeals <span class="badge" id="appeal-count">0</span></h2><button class="logout-btn" onclick="adminLogout()">Logout</button></div>
     <div class="whitelist-card">
-      <h3>🛡️ Whitelisted Admins</h3>
-      <div class="whitelist-row">
-        <input type="email" id="whitelist-input" placeholder="Add an email to whitelist..." />
-        <button class="add-btn" onclick="addWhitelist()">+ Add</button>
-      </div>
+      <h3>🛡️ Whitelist</h3>
+      <div class="whitelist-row"><input type="email" id="whitelist-input" /><button class="action-btn" onclick="addWhitelist()">Add</button></div>
       <div class="whitelist-list" id="whitelist-list"></div>
     </div>
-    <div class="appeals-list" id="appeals-list">
-      <div class="loading-box">⏳ Loading appeals...</div>
-    </div>
+    <div class="appeals-list" id="appeals-list"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-  // ══════════════════════════════════════════════
   // CONFIG
-  // ══════════════════════════════════════════════
   const firebaseConfig = {
     apiKey: "AIzaSyBSc1wAwQRlH8AdDhkiMnByIXZq29rTo_Q",
     authDomain: "stfo-appeals.firebaseapp.com",
@@ -308,81 +133,27 @@
   const EMAILJS_TEMPLATE_ID = 'template_kreqxod';
   const EMAILJS_PUBLIC_KEY = 'us7G33aq7_9z5zwcv';
   
-  // PRIMARY ADMIN EMAIL
+  // STAFF EMAIL FOR CODES & NOTIFICATIONS
+  const STAFF_NOTIFY_EMAIL = 'Faddycutty@gmail.com'; 
   const OWNER_EMAIL = 'Faddycutty@gmail.com'; 
-  const STAFF_NOTIFY_EMAIL = 'fakeaquatic@gmail.com'; 
-  
-  const COOLDOWN_MS = 10 * 24 * 60 * 60 * 1000;
-  const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 
   let whitelist = JSON.parse(localStorage.getItem('roblox_whitelist') || '[]');
   let pendingCode = null;
   let pendingLoginEmail = null;
-  let userIP = null;
-  let unsubscribeAppeals = null;
 
-  // Ensure owner is always in whitelist
   if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL.toLowerCase())) {
     whitelist.unshift(OWNER_EMAIL);
     localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist));
   }
 
   window.addEventListener('load', () => {
-    try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); }
-    catch(e) { console.error('EmailJS failed:', e); }
-    restorePendingLogin();
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     checkAdminSession();
-    fetchIP().then(() => checkCooldownOnLoad());
-    checkResetParam();
   });
 
-  async function fetchIP() {
-    try {
-      const res = await fetch('https://api.ipify.org?format=json');
-      const data = await res.json();
-      userIP = data.ip;
-    } catch(e) {}
-  }
-
-  function getFingerprint() {
-    return 'fp_' + Math.abs(navigator.userAgent.length + screen.width).toString(36);
-  }
-
-  function getTrackingKeys() {
-    const keys = [getFingerprint()];
-    if (userIP) keys.push('ip_' + userIP.replace(/\./g, '_'));
-    return keys;
-  }
-
-  function getCooldownRemaining() {
-    const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
-    let maxRemaining = 0;
-    getTrackingKeys().forEach(key => {
-      if (data[key]) {
-        const r = COOLDOWN_MS - (Date.now() - data[key]);
-        if (r > maxRemaining) maxRemaining = r;
-      }
-    });
-    return maxRemaining > 0 ? maxRemaining : 0;
-  }
-
-  function checkCooldownOnLoad() {
-    const remaining = getCooldownRemaining();
-    if (remaining > 0) {
-      const btn = document.getElementById('appeal-submit-btn');
-      btn.disabled = true;
-      btn.textContent = '⏳ Wait ' + Math.ceil(remaining/86400000) + ' days before reapplying';
-    }
-  }
-
-  // ══════════════════════════════════════════════
-  // AUTH LOGIC
-  // ══════════════════════════════════════════════
   function checkAdminSession() {
     const s = JSON.parse(localStorage.getItem('admin_session') || 'null');
-    if (s && Date.now() < s.expires && whitelist.map(e=>e.toLowerCase()).includes(s.email)) {
-      openAdminPanel();
-    }
+    if (s && Date.now() < s.expires) openAdminPanel();
   }
 
   function sendCode() {
@@ -394,43 +165,32 @@
     
     pendingCode = Math.floor(100000 + Math.random() * 900000).toString();
     pendingLoginEmail = emailInput;
-    
     document.getElementById('send-code-btn').disabled = true;
-    document.getElementById('send-code-btn').textContent = '⏳ Sending...';
 
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email: STAFF_NOTIFY_EMAIL,
-      name: 'Staff',
-      title: '🔐 Admin Login Code',
-      message: `Login attempt for: ${emailInput}\n\nCode: ${pendingCode}`,
+      email: STAFF_NOTIFY_EMAIL, // SENT TO FADDYCUTTY
+      name: 'STFO Admin',
+      title: '🔐 Login Code',
+      message: `Login attempt for: ${emailInput}\n\nYour 6-digit code is: ${pendingCode}`,
     }).then(() => {
       document.getElementById('email-step').style.display = 'none';
       document.getElementById('code-step').style.display = 'block';
       document.getElementById('login-info').style.display = 'block';
-      sessionStorage.setItem('pending_admin_login', JSON.stringify({ email: emailInput, code: pendingCode, expires: Date.now() + 600000 }));
-    }).catch(() => showToast('Email failed to send.', 'err'));
+    }).catch(() => alert('Email failed.'));
   }
 
   function verifyCode() {
     if (document.getElementById('admin-code').value.trim() === pendingCode) {
-      localStorage.setItem('admin_session', JSON.stringify({ email: pendingLoginEmail, expires: Date.now() + SESSION_DURATION_MS }));
+      localStorage.setItem('admin_session', JSON.stringify({ email: pendingLoginEmail, expires: Date.now() + 2592000000 }));
       openAdminPanel();
-      showToast('Logged in!', 'ok');
-    } else {
-      document.getElementById('code-error').style.display = 'block';
-    }
+    } else { alert('Wrong code!'); }
   }
 
   function openAdminPanel() {
     document.getElementById('admin-login').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
     renderWhitelist();
-    startAppealListener();
-  }
-
-  function startAppealListener() {
-    if (unsubscribeAppeals) return;
-    unsubscribeAppeals = appealsCol.orderBy('timestamp', 'desc').onSnapshot(snap => {
+    appealsCol.orderBy('timestamp', 'desc').onSnapshot(snap => {
       const appeals = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderAppeals(appeals);
     });
@@ -441,15 +201,15 @@
     document.getElementById('appeal-count').textContent = appeals.length;
     list.innerHTML = appeals.map(a => `
       <div class="appeal-item">
-        <div class="appeal-top">
-          <div class="player-name">🎮 ${esc(a.username)} (${esc(a.type)})</div>
+        <div style="display:flex; justify-content:space-between;">
+          <b>🎮 ${esc(a.username)}</b>
           <span class="status-pill status-${(a.status||'pending').toLowerCase()}">${a.status || 'Pending'}</span>
         </div>
-        <div class="appeal-reason">${esc(a.text)}</div>
+        <p style="margin:10px 0; color:#ccc;">${esc(a.text)}</p>
         <div class="action-row">
-          <button class="action-btn btn-accept" onclick="setStatus('${a.id}','Accepted','${esc(a.username)}','${esc(a.email)}')">Accept</button>
-          <button class="action-btn btn-decline" onclick="setStatus('${a.id}','Declined','${esc(a.username)}','${esc(a.email)}')">Decline</button>
-          <button class="action-btn btn-delete" onclick="deleteAppeal('${a.id}')">Delete</button>
+          <button class="action-btn" style="border-color:var(--green); color:var(--green);" onclick="setStatus('${a.id}','Accepted','${esc(a.username)}','${esc(a.email)}')">Accept</button>
+          <button class="action-btn" style="border-color:var(--red); color:var(--red);" onclick="setStatus('${a.id}','Declined','${esc(a.username)}','${esc(a.email)}')">Decline</button>
+          <button class="action-btn" onclick="deleteAppeal('${a.id}')">Delete</button>
         </div>
       </div>`).join('');
   }
@@ -461,100 +221,33 @@
       text: document.getElementById('appeal-text').value,
       type: document.getElementById('punishment-type').value,
       status: 'Pending',
-      date: new Date().toLocaleDateString(),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     };
-    if (!data.username || !data.email || !data.text) return showToast('Fill all fields!', 'err');
-
-    try {
-      await appealsCol.add(data);
-      const trackData = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
-      getTrackingKeys().forEach(k => trackData[k] = Date.now());
-      localStorage.setItem('appeal_cooldowns', JSON.stringify(trackData));
-      document.getElementById('success-box').classList.add('show');
-    } catch(e) { showToast('Submission failed.', 'err'); }
+    if (!data.username || !data.email) return;
+    await appealsCol.add(data);
+    document.getElementById('success-box').classList.add('show');
+    // Notify Faddycutty of new appeal
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email: STAFF_NOTIFY_EMAIL,
+      name: 'System',
+      title: '📬 New Appeal',
+      message: `User ${data.username} has submitted a new appeal.`
+    });
   }
 
-  async function setStatus(id, status, username, email) {
+  async function setStatus(id, status, user, email) {
     await appealsCol.doc(id).update({ status });
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email, name: username, title: 'Appeal Result', status: status,
-      message: `Your appeal has been ${status}.`
+      email, name: user, title: 'Appeal Update', message: `Your appeal has been ${status}.`
     });
-    showToast('Status updated!', 'ok');
   }
 
-  async function deleteAppeal(id) {
-    if (confirm('Delete this?')) await appealsCol.doc(id).delete();
-  }
-
-  function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    document.getElementById('admin-banner').classList.toggle('show', page === 'admin');
-  }
-
-  function adminLogout() {
-    localStorage.removeItem('admin_session');
-    location.reload();
-  }
-
-  function renderWhitelist() {
-    const list = document.getElementById('whitelist-list');
-    list.innerHTML = whitelist.map(email => `
-      <div class="whitelist-tag ${email.toLowerCase() === OWNER_EMAIL.toLowerCase() ? 'owner-tag' : ''}">
-        ${esc(email)}
-        ${email.toLowerCase() !== OWNER_EMAIL.toLowerCase() ? `<span class="remove-tag" onclick="removeWhitelist('${email}')">×</span>` : ''}
-      </div>`).join('');
-  }
-
-  function addWhitelist() {
-    const email = document.getElementById('whitelist-input').value.trim().toLowerCase();
-    if (email && !whitelist.includes(email)) {
-      whitelist.push(email);
-      localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist));
-      renderWhitelist();
-    }
-  }
-
-  function removeWhitelist(email) {
-    whitelist = whitelist.filter(e => e !== email);
-    localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist));
-    renderWhitelist();
-  }
-
+  async function deleteAppeal(id) { if(confirm('Delete?')) await appealsCol.doc(id).delete(); }
+  function showPage(p) { document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); }
+  function adminLogout() { localStorage.removeItem('admin_session'); location.reload(); }
+  function renderWhitelist() { document.getElementById('whitelist-list').innerHTML = whitelist.map(e => `<div class="whitelist-tag">${e}</div>`).join(''); }
+  function addWhitelist() { const e = document.getElementById('whitelist-input').value.toLowerCase(); if(e && !whitelist.includes(e)){ whitelist.push(e); localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist)); renderWhitelist(); } }
   function esc(s) { return s ? s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#039;"}[m])) : ''; }
-  
-  function showToast(m, type) {
-    const t = document.getElementById('toast');
-    t.textContent = m;
-    t.className = 'toast show toast-' + type;
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-
-  function restorePendingLogin() {
-    const data = JSON.parse(sessionStorage.getItem('pending_admin_login') || 'null');
-    if (data && Date.now() < data.expires) {
-      pendingCode = data.code;
-      pendingLoginEmail = data.email;
-      document.getElementById('email-step').style.display = 'none';
-      document.getElementById('code-step').style.display = 'block';
-    }
-  }
-
-  function clearAllCooldowns() {
-    const link = window.location.href.split('?')[0] + '?clearcd=' + Date.now();
-    navigator.clipboard.writeText(link);
-    showToast('Reset link copied to clipboard!', 'ok');
-  }
-
-  function checkResetParam() {
-    if (new URLSearchParams(window.location.search).get('clearcd')) {
-      localStorage.removeItem('appeal_cooldowns');
-      showToast('Cooldown cleared!', 'ok');
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }
 </script>
 </body>
 </html>
