@@ -6,7 +6,6 @@
 <title>Steal Time From Others Appeals</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
@@ -192,7 +191,6 @@
   </div>
 </nav>
 
-<!-- ════════ APPEAL PAGE ════════ -->
 <div class="page active" id="page-appeal">
   <div class="hero">
     <div class="hero-icon">📋</div>
@@ -239,7 +237,6 @@
   </div>
 </div>
 
-<!-- ════════ ADMIN PAGE ════════ -->
 <div class="page" id="page-admin">
   <div id="admin-login">
     <div class="login-card">
@@ -312,7 +309,10 @@
   const EMAILJS_TEMPLATE_ID = 'template_kreqxod';
   const EMAILJS_PUBLIC_KEY = 'us7G33aq7_9z5zwcv';
   const STAFF_NOTIFY_EMAIL = 'fakeaquatic@gmail.com';
-  const OWNER_EMAIL = 'noahhemingway1116@gmail.com';
+  
+  // ---> NEW EMAIL ADDED HERE <---
+  const OWNER_EMAIL = 'Faddycutty@gmail.com'; 
+  
   const COOLDOWN_MS = 10 * 24 * 60 * 60 * 1000;
   const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -323,7 +323,7 @@
   let userIP = null;
   let unsubscribeAppeals = null; // Firestore real-time listener
 
-  if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL)) {
+  if (!whitelist.map(e => e.toLowerCase()).includes(OWNER_EMAIL.toLowerCase())) {
     whitelist.unshift(OWNER_EMAIL);
     saveWhitelist();
   }
@@ -375,7 +375,7 @@
     return keys;
   }
 
-  // ── Cooldown (still local — per device by design)
+  // ── Cooldown
   function getCooldownRemaining() {
     const data = JSON.parse(localStorage.getItem('appeal_cooldowns') || '{}');
     let maxRemaining = 0;
@@ -418,7 +418,7 @@
     const base = window.location.href.split('?')[0];
     const link = base + '?clearcd=' + resetTime;
     navigator.clipboard.writeText(link).then(() => {
-      showToast('✅ Reset link copied! Share it in Discord so players can click it.', 'ok');
+      showToast('✅ Reset link copied! Share it in Discord.', 'ok');
     }).catch(() => {
       prompt('Share this link with players to clear their cooldown:', link);
     });
@@ -492,7 +492,6 @@
     document.getElementById('page-' + page).classList.add('active');
     document.getElementById('tab-' + page).classList.add('active');
     document.getElementById('admin-banner').classList.toggle('show', page === 'admin');
-    // Re-start listener if admin panel is open
     if (page === 'admin' && document.getElementById('admin-panel').style.display !== 'none') {
       startAppealListener();
     }
@@ -502,7 +501,7 @@
   // FIRESTORE — REAL-TIME APPEALS LISTENER
   // ══════════════════════════════════════════════
   function startAppealListener() {
-    if (unsubscribeAppeals) return; // Already listening
+    if (unsubscribeAppeals) return; 
     document.getElementById('appeals-list').innerHTML = '<div class="loading-box">⏳ Loading appeals...</div>';
     unsubscribeAppeals = appealsCol
       .orderBy('timestamp', 'desc')
@@ -619,7 +618,6 @@
   async function setStatus(id, status, username, email, type) {
     try {
       await appealsCol.doc(id).update({ status });
-      // Appeals re-render automatically via the real-time listener
       const msgs = {
         Accepted: `Hi ${username},\n\nWe have great news — your appeal has been ACCEPTED!\n\nAfter carefully reviewing your case, our moderation team has decided to lift your punishment. You are now free to rejoin and enjoy the game.\n\nWelcome back!\n\nBest regards,\nThe Staff Team`,
         Unbanned: `Hi ${username},\n\nYou have officially been UNBANNED! 🎉\n\nOur moderation team reviewed your case and lifted your ban. You are now free to rejoin the game. See you in-game! 🎮\n\nBest regards,\nThe Staff Team`,
@@ -627,6 +625,7 @@
         Pending: `Hi ${username},\n\nYour appeal is currently PENDING review.\n\nOur team will reach a decision within 3 business days.\n\nBest regards,\nThe Staff Team`
       };
       const toastMsgs = { Accepted: '✅ Accepted — emailing ' + email, Unbanned: '🔓 Unbanned — emailing ' + email, Declined: '❌ Declined — emailing ' + email, Pending: '🕐 Pending — emailing ' + email };
+      
       if (emailjsReady) {
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
           email, name: username,
@@ -637,90 +636,104 @@
         }).then(() => showToast(toastMsgs[status], status === 'Declined' ? 'err' : 'ok'))
           .catch(err => { showToast('Status saved but email failed.', 'err'); console.error(err); });
       } else {
-        showToast('Status saved!', 'ok');
+        showToast('Status updated!', 'ok');
       }
     } catch(err) {
-      showToast('Failed to update status.', 'err');
-      console.error(err);
+      console.error('Error updating status:', err);
+      showToast('Error updating status.', 'err');
     }
   }
 
-  // ── Delete
+  // ══════════════════════════════════════════════
+  // DELETE APPEAL
+  // ══════════════════════════════════════════════
   async function deleteAppeal(id) {
+    if (!confirm('Are you sure you want to delete this appeal?')) return;
     try {
       await appealsCol.doc(id).delete();
-      showToast('Appeal deleted.', 'ok');
+      showToast('Appeal deleted successfully.', 'ok');
     } catch(err) {
-      showToast('Failed to delete.', 'err');
-      console.error(err);
+      console.error('Error deleting appeal:', err);
+      showToast('Error deleting appeal.', 'err');
     }
   }
 
   // ══════════════════════════════════════════════
-  // ADMIN LOGIN
+  // LOGIN VERIFICATION CODE LOGIC
   // ══════════════════════════════════════════════
   function sendCode() {
-    const entered = document.getElementById('admin-email').value.trim().toLowerCase();
-    const allowed = whitelist.map(e => e.toLowerCase());
-    const errEl = document.getElementById('login-error');
-    const infoEl = document.getElementById('login-info');
-    const btn = document.getElementById('send-code-btn');
-    errEl.style.display = infoEl.style.display = 'none';
-    if (!entered || !entered.includes('@')) { showToast('Enter a valid email.', 'err'); return; }
-    if (!allowed.includes(entered)) {
-      errEl.style.display = 'block';
-      setTimeout(() => { errEl.style.display = 'none'; }, 3500);
+    const emailInput = document.getElementById('admin-email').value.trim().toLowerCase();
+    if (!emailInput) return;
+    
+    if (!whitelist.map(e => e.toLowerCase()).includes(emailInput)) {
+      document.getElementById('login-error').style.display = 'block';
       return;
     }
-    pendingCode = String(Math.floor(100000 + Math.random() * 900000));
-    pendingLoginEmail = entered;
-    btn.disabled = true; btn.textContent = '⏳ Sending...';
-    if (!emailjsReady) { showToast('EmailJS not ready.', 'err'); btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE'; return; }
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email: STAFF_NOTIFY_EMAIL, name: 'Staff Team',
-      title: 'Admin Login Verification Code', status: 'LOGIN CODE',
-      message: 'Admin login requested by: ' + entered + '\n\nVerification Code: ' + pendingCode + '\n\nShare this code ONLY with the person trying to log in. Expires in 10 minutes.',
-      punishment: 'N/A'
-    }).then(() => {
-      infoEl.style.display = 'block';
+    
+    document.getElementById('login-error').style.display = 'none';
+    pendingCode = Math.floor(100000 + Math.random() * 900000).toString();
+    pendingLoginEmail = emailInput;
+    
+    const btn = document.getElementById('send-code-btn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Sending...';
+
+    if (emailjsReady) {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        email: STAFF_NOTIFY_EMAIL,
+        name: 'Staff',
+        title: '🔐 Admin Login Code',
+        status: 'VERIFICATION',
+        message: `An admin login attempt is happening right now.\n\nEmail trying to log in: ${emailInput}\n\nVerification Code: ${pendingCode}\n\nIf this was not authorized, ignore this email.`,
+        punishment: 'N/A'
+      }).then(() => {
+        document.getElementById('email-step').style.display = 'none';
+        document.getElementById('code-step').style.display = 'block';
+        document.getElementById('login-info').style.display = 'block';
+        
+        sessionStorage.setItem('pending_admin_login', JSON.stringify({
+          email: emailInput,
+          code: pendingCode,
+          expires: Date.now() + 15 * 60000 
+        }));
+      }).catch(err => {
+        console.error('Failed to send code:', err);
+        showToast('Failed to send email. Check console.', 'err');
+        btn.disabled = false;
+        btn.textContent = '📨 SEND VERIFICATION CODE';
+      });
+    } else {
+      console.log("EmailJS offline. Code is: " + pendingCode);
       document.getElementById('email-step').style.display = 'none';
       document.getElementById('code-step').style.display = 'block';
-      sessionStorage.setItem('pending_admin_login', JSON.stringify({ email: entered, code: pendingCode, expires: Date.now() + 600000 }));
-      btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
-      setTimeout(() => { pendingCode = null; sessionStorage.removeItem('pending_admin_login'); }, 600000);
-    }).catch(err => {
-      showToast('Failed to send code.', 'err');
-      btn.disabled = false; btn.textContent = '📨 SEND VERIFICATION CODE';
-    });
+      document.getElementById('login-info').style.display = 'block';
+    }
   }
 
   function verifyCode() {
-    const entered = document.getElementById('admin-code').value.trim();
-    const errEl = document.getElementById('code-error');
-    errEl.style.display = 'none';
-    if (!pendingCode) { showToast('Code expired. Request a new one.', 'err'); resetLogin(); return; }
-    if (entered === pendingCode) {
-      pendingCode = null;
+    const code = document.getElementById('admin-code').value.trim();
+    if (code === pendingCode) {
+      saveAdminSession(pendingLoginEmail);
       sessionStorage.removeItem('pending_admin_login');
-      saveAdminSession(pendingLoginEmail || '');
       openAdminPanel();
-      showToast('✅ Logged in — session saved for 30 days', 'ok');
+      showToast('✅ Logged in successfully!', 'ok');
     } else {
-      errEl.style.display = 'block';
-      document.getElementById('admin-code').value = '';
-      setTimeout(() => { errEl.style.display = 'none'; }, 3500);
+      document.getElementById('code-error').style.display = 'block';
     }
   }
 
   function resetLogin() {
-    pendingCode = null; pendingLoginEmail = null;
     sessionStorage.removeItem('pending_admin_login');
+    pendingCode = null;
+    pendingLoginEmail = null;
     document.getElementById('email-step').style.display = 'block';
     document.getElementById('code-step').style.display = 'none';
-    document.getElementById('admin-email').value = '';
-    document.getElementById('admin-code').value = '';
     document.getElementById('login-info').style.display = 'none';
-    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('code-error').style.display = 'none';
+    document.getElementById('admin-code').value = '';
+    const btn = document.getElementById('send-code-btn');
+    btn.disabled = false;
+    btn.textContent = '📨 SEND VERIFICATION CODE';
   }
 
   function adminLogout() {
@@ -729,42 +742,76 @@
     document.getElementById('admin-panel').style.display = 'none';
     document.getElementById('admin-login').style.display = 'block';
     resetLogin();
-    showToast('Logged out.', 'ok');
+    showPage('appeal');
+    showToast('🚪 Logged out.', 'ok');
   }
 
-  // ── Whitelist
-  function addWhitelist() {
-    const val = document.getElementById('whitelist-input').value.trim().toLowerCase();
-    if (!val || !val.includes('@')) { showToast('Enter a valid email.', 'err'); return; }
-    if (whitelist.map(e=>e.toLowerCase()).includes(val)) { showToast('Already whitelisted!', 'err'); return; }
-    whitelist.push(val);
-    saveWhitelist(); renderWhitelist();
-    document.getElementById('whitelist-input').value = '';
-    showToast('✅ ' + val + ' added!', 'ok');
-  }
-
-  function removeWhitelist(email) {
-    if (email.toLowerCase() === OWNER_EMAIL) { showToast('Cannot remove the owner!', 'err'); return; }
-    whitelist = whitelist.filter(e => e.toLowerCase() !== email.toLowerCase());
-    saveWhitelist(); renderWhitelist();
+  // ══════════════════════════════════════════════
+  // WHITELIST MANAGEMENT
+  // ══════════════════════════════════════════════
+  function saveWhitelist() {
+    localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist));
   }
 
   function renderWhitelist() {
-    document.getElementById('whitelist-list').innerHTML = whitelist.map(e => `
-      <div class="whitelist-tag ${e.toLowerCase()===OWNER_EMAIL?'owner-tag':''}">
-        ${esc(e)}
-        ${e.toLowerCase()===OWNER_EMAIL ? '<span title="Owner">👑</span>' : `<span class="remove-tag" onclick="removeWhitelist('${esc(e)}')" title="Remove">✕</span>`}
-      </div>`).join('');
+    const list = document.getElementById('whitelist-list');
+    list.innerHTML = whitelist.map(email => {
+      const isOwner = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+      return `
+        <div class="whitelist-tag ${isOwner ? 'owner-tag' : ''}">
+          ${esc(email)}
+          ${!isOwner ? `<span class="remove-tag" onclick="removeWhitelist('${esc(email)}')">×</span>` : ''}
+        </div>
+      `;
+    }).join('');
   }
 
-  // ── Helpers
-  function saveWhitelist() { localStorage.setItem('roblox_whitelist', JSON.stringify(whitelist)); }
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;'); }
-  function showToast(msg, type='ok') {
+  function addWhitelist() {
+    const input = document.getElementById('whitelist-input');
+    const email = input.value.trim().toLowerCase();
+    if (!email || !email.includes('@')) {
+      showToast('Enter a valid email.', 'err');
+      return;
+    }
+    if (whitelist.map(e => e.toLowerCase()).includes(email)) {
+      showToast('Email already whitelisted.', 'err');
+      return;
+    }
+    whitelist.push(email);
+    saveWhitelist();
+    renderWhitelist();
+    input.value = '';
+    showToast('✅ Email added to whitelist.', 'ok');
+  }
+
+  function removeWhitelist(email) {
+    if (email.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+      showToast('Cannot remove the owner email.', 'err');
+      return;
+    }
+    whitelist = whitelist.filter(e => e.toLowerCase() !== email.toLowerCase());
+    saveWhitelist();
+    renderWhitelist();
+    showToast('🗑 Email removed from whitelist.', 'ok');
+  }
+
+  // ══════════════════════════════════════════════
+  // UTILITIES
+  // ══════════════════════════════════════════════
+  function esc(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, function(m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+    });
+  }
+
+  let toastTimeout;
+  function showToast(msg, type) {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = 'toast toast-' + type + ' show';
-    setTimeout(() => t.classList.remove('show'), 3500);
+    t.className = 'toast show toast-' + type;
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 3000);
   }
 </script>
 </body>
